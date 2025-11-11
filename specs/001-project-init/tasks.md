@@ -119,7 +119,7 @@ description: "Task list for browser extension project initialization"
 - [x] T041 [US3] Create .github/workflows/ci.yml file with GitHub Actions workflow: install deps, lint, format check, typecheck, test with coverage, build
 - [x] T042 [US3] Configure GitHub Actions to run on push and pull_request events
 - [x] T043 [US3] Add Node.js version matrix (node 20.x) and pnpm caching to ci.yml
-- [ ] T044 [US3] Test GitHub Actions: Push code to remote and verify CI runs successfully
+- [x] T044 [US3] Test GitHub Actions: Push code to remote and verify CI runs successfully
 - [x] T045 [P] [US3] Update README.md with testing section: how to run tests, how to generate coverage, where to find coverage reports
 
 **Checkpoint**: Test infrastructure complete - unit tests passing, coverage reporting working, CI/CD pipeline running
@@ -261,14 +261,14 @@ Each story is independently testable and delivers value on its own.
 
 ### Constitution Compliance Checklist
 
-- [ ] No secrets in codebase (.gitignore configured)
-- [ ] Pre-commit hooks scan for secrets
-- [ ] Test infrastructure ready (Vitest configured)
-- [ ] Documentation complete (README, CONTRIBUTING, CHANGELOG)
-- [ ] License file present (MIT recommended)
-- [ ] GitHub Actions configured for transparency
-- [ ] All public functions have TSDoc comments
-- [ ] Linting and formatting enforced
+- [x] No secrets in codebase (.gitignore configured)
+- [x] Pre-commit hooks scan for secrets
+- [x] Test infrastructure ready (Vitest configured)
+- [x] Documentation complete (README, CONTRIBUTING, CHANGELOG)
+- [x] License file present (MIT recommended)
+- [x] GitHub Actions configured for transparency
+- [x] All public functions have TSDoc comments
+- [x] Linting and formatting enforced
 
 ---
 
