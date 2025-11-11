@@ -4,12 +4,6 @@
  */
 
 /**
- * Whether DOM injection is enabled
- * @default false
- */
-export const ENABLE_INJECT = process.env.PLASMO_PUBLIC_ENABLE_INJECT === 'true';
-
-/**
  * Git commit hash for version tracking
  * Injected at build time, defaults to 'dev' in development
  */

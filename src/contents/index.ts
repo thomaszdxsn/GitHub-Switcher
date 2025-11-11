@@ -3,7 +3,7 @@
  * Automatically injected on GitHub pages matching manifest patterns
  */
 
-import { COMMIT_HASH, ENABLE_INJECT } from '@/lib/config';
+import { COMMIT_HASH } from '@/lib/config';
 import { isGitHubPage } from '@/lib/detectGithub';
 import { log, warn } from '@/utils/logger';
 
@@ -23,11 +23,9 @@ import { log, warn } from '@/utils/logger';
 
   log('GitHub page detected:', detection.pathname);
 
-  // Check feature flag for DOM injection
-  if (ENABLE_INJECT) {
-    log('Injection enabled (future implementation)');
-    // Future: DOM manipulation, button creation, etc.
-  } else {
-    log('Injection disabled by feature flag');
-  }
+  // TODO: Implement DOM manipulation here
+  // - Add account switcher button
+  // - Inject team selection UI
+  // - Handle account switching logic
+  log('Ready for DOM injection implementation');
 })();

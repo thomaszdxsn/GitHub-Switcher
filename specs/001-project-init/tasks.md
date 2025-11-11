@@ -95,7 +95,7 @@ description: "Task list for browser extension project initialization"
 - [x] T030 [P] [US2] Verify Prettier formatter works: Run `pnpm run format:check` on src/ directory and confirm it executes
 - [x] T031 [P] [US2] Verify TypeScript compilation: Run `pnpm run typecheck` and confirm no type errors
 - [x] T032 [US2] Test pre-commit hooks: Make a trivial change, attempt `git commit`, verify hooks run and block if issues found
-- [ ] T033 [US2] Test hot reload: Run `pnpm dev`, modify src/contents/index.ts, verify extension reloads automatically in browser
+- [] T033 [US2] Test hot reload: Run `pnpm dev`, modify src/contents/index.ts, verify extension reloads automatically in browser
 - [x] T034 [US2] Document hot reload limitations in README.md: Note that manifest/permission changes require manual reload
 - [x] T035 [P] [US2] Add format scripts to package.json: `format: prettier --write src tests`, `format:check: prettier --check src tests`
 - [x] T036 [P] [US2] Add lint:fix script to package.json: `lint:fix: biome check --apply src tests`

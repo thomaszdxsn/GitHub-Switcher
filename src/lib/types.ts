@@ -25,11 +25,3 @@ export interface LogMessage {
   /** Timestamp when message was created */
   timestamp: number;
 }
-
-/**
- * Feature flags for the extension
- */
-export interface FeatureFlags {
-  /** Whether DOM injection is enabled */
-  ENABLE_INJECT: boolean;
-}
