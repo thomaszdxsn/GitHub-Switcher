@@ -92,10 +92,15 @@ pnpm test:watch
 
 Generate coverage report:
 ```bash
-pnpm test:coverage
+pnpm run test:coverage
 ```
 
-Coverage reports are generated in the `coverage/` directory.
+**Coverage targets**: The project enforces 80% code coverage for lines, functions, branches, and statements. Coverage reports are generated in the `coverage/` directory and include:
+- `coverage/index.html` - HTML coverage report (open in browser)
+- `coverage/coverage-final.json` - JSON format for CI/CD
+- Console output showing coverage summary
+
+**Viewing coverage**: After running `pnpm run test:coverage`, open `coverage/index.html` in your browser to see detailed line-by-line coverage.
 
 ## Load Extension in Chrome
 

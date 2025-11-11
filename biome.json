@@ -28,6 +28,18 @@
       }
     }
   },
+  "overrides": [
+    {
+      "includes": ["tests/**/*"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          }
+        }
+      }
+    }
+  ],
   "javascript": {
     "formatter": {
       "quoteStyle": "single",

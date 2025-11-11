@@ -91,14 +91,14 @@ description: "Task list for browser extension project initialization"
 
 ### Implementation for User Story 2
 
-- [ ] T029 [P] [US2] Verify Biome linter works: Run `pnpm run lint` on src/ directory and confirm it executes without errors
-- [ ] T030 [P] [US2] Verify Prettier formatter works: Run `pnpm run format:check` on src/ directory and confirm it executes
-- [ ] T031 [P] [US2] Verify TypeScript compilation: Run `pnpm run typecheck` and confirm no type errors
-- [ ] T032 [US2] Test pre-commit hooks: Make a trivial change, attempt `git commit`, verify hooks run and block if issues found
+- [x] T029 [P] [US2] Verify Biome linter works: Run `pnpm run lint` on src/ directory and confirm it executes without errors
+- [x] T030 [P] [US2] Verify Prettier formatter works: Run `pnpm run format:check` on src/ directory and confirm it executes
+- [x] T031 [P] [US2] Verify TypeScript compilation: Run `pnpm run typecheck` and confirm no type errors
+- [x] T032 [US2] Test pre-commit hooks: Make a trivial change, attempt `git commit`, verify hooks run and block if issues found
 - [ ] T033 [US2] Test hot reload: Run `pnpm dev`, modify src/contents/index.ts, verify extension reloads automatically in browser
-- [ ] T034 [US2] Document hot reload limitations in README.md: Note that manifest/permission changes require manual reload
-- [ ] T035 [P] [US2] Add format scripts to package.json: `format: prettier --write src tests`, `format:check: prettier --check src tests`
-- [ ] T036 [P] [US2] Add lint:fix script to package.json: `lint:fix: biome check --apply src tests`
+- [x] T034 [US2] Document hot reload limitations in README.md: Note that manifest/permission changes require manual reload
+- [x] T035 [P] [US2] Add format scripts to package.json: `format: prettier --write src tests`, `format:check: prettier --check src tests`
+- [x] T036 [P] [US2] Add lint:fix script to package.json: `lint:fix: biome check --apply src tests`
 
 **Checkpoint**: Development environment fully configured - linting, formatting, type checking, hot reload all working
 
@@ -112,15 +112,15 @@ description: "Task list for browser extension project initialization"
 
 ### Implementation for User Story 3
 
-- [ ] T037 [P] [US3] Create tests/unit/detectGithub.test.ts file with tests for isGitHubPage() function (valid GitHub URL, invalid URL, subdomains)
-- [ ] T038 [P] [US3] Create tests/unit/logger.test.ts file with tests for log(), warn(), error() functions (verify console output, message formatting)
-- [ ] T039 [US3] Run `pnpm test` and verify all tests pass
-- [ ] T040 [US3] Run `pnpm run test:coverage` and verify coverage report is generated in coverage/ directory
-- [ ] T041 [US3] Create .github/workflows/ci.yml file with GitHub Actions workflow: install deps, lint, format check, typecheck, test with coverage, build
-- [ ] T042 [US3] Configure GitHub Actions to run on push and pull_request events
-- [ ] T043 [US3] Add Node.js version matrix (node 20.x) and pnpm caching to ci.yml
+- [x] T037 [P] [US3] Create tests/unit/detectGithub.test.ts file with tests for isGitHubPage() function (valid GitHub URL, invalid URL, subdomains)
+- [x] T038 [P] [US3] Create tests/unit/logger.test.ts file with tests for log(), warn(), error() functions (verify console output, message formatting)
+- [x] T039 [US3] Run `pnpm test` and verify all tests pass
+- [x] T040 [US3] Run `pnpm run test:coverage` and verify coverage report is generated in coverage/ directory
+- [x] T041 [US3] Create .github/workflows/ci.yml file with GitHub Actions workflow: install deps, lint, format check, typecheck, test with coverage, build
+- [x] T042 [US3] Configure GitHub Actions to run on push and pull_request events
+- [x] T043 [US3] Add Node.js version matrix (node 20.x) and pnpm caching to ci.yml
 - [ ] T044 [US3] Test GitHub Actions: Push code to remote and verify CI runs successfully
-- [ ] T045 [P] [US3] Update README.md with testing section: how to run tests, how to generate coverage, where to find coverage reports
+- [x] T045 [P] [US3] Update README.md with testing section: how to run tests, how to generate coverage, where to find coverage reports
 
 **Checkpoint**: Test infrastructure complete - unit tests passing, coverage reporting working, CI/CD pipeline running
 

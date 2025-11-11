@@ -10,17 +10,31 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": [
+        "src/*"
+      ]
     },
-    
-    "types": ["chrome", "node"],
-    
-    "lib": ["ES2020", "DOM", "DOM.Iterable"]
+    "types": [
+      "chrome",
+      "node"
+    ],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ]
   },
-  
-  "include": ["src/**/*", "tests/**/*"],
-  "exclude": ["node_modules", "dist", "build", ".plasmo"]
+  "include": [
+    ".plasmo/index.d.ts",
+    "src/**/*",
+    "tests/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    ".plasmo"
+  ]
 }
