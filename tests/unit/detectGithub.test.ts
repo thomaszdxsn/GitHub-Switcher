@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isGitHubPage } from '@/lib/detectGithub';
+import { isGitHubPage, parseGitHubUrl } from '@/lib/detectGithub';
 
 describe('detectGithub', () => {
   describe('isGitHubPage', () => {
@@ -98,6 +98,96 @@ describe('detectGithub', () => {
 
       expect(result.isGitHub).toBe(true);
       expect(result.hostname).toBe('api.github.com');
+    });
+  });
+
+  describe('parseGitHubUrl', () => {
+    it('parses basic repository URL', () => {
+      const result = parseGitHubUrl('https://github.com/microsoft/vscode');
+
+      expect(result).toEqual({
+        owner: 'microsoft',
+        repo: 'vscode',
+        currentUrl: 'https://github.com/microsoft/vscode',
+      });
+    });
+
+    it('parses repository URL with blob path', () => {
+      const result = parseGitHubUrl(
+        'https://github.com/microsoft/vscode/blob/main/src/vs/editor/editor.api.ts'
+      );
+
+      expect(result).toEqual({
+        owner: 'microsoft',
+        repo: 'vscode',
+        currentUrl: 'https://github.com/microsoft/vscode/blob/main/src/vs/editor/editor.api.ts',
+      });
+    });
+
+    it('parses repository URL with tree path', () => {
+      const result = parseGitHubUrl('https://github.com/facebook/react/tree/main/packages');
+
+      expect(result).toEqual({
+        owner: 'facebook',
+        repo: 'react',
+        currentUrl: 'https://github.com/facebook/react/tree/main/packages',
+      });
+    });
+
+    it('parses repository URL with pull request', () => {
+      const result = parseGitHubUrl('https://github.com/microsoft/vscode/pull/123');
+
+      expect(result).toEqual({
+        owner: 'microsoft',
+        repo: 'vscode',
+        currentUrl: 'https://github.com/microsoft/vscode/pull/123',
+      });
+    });
+
+    it('parses repository URL with issues', () => {
+      const result = parseGitHubUrl('https://github.com/microsoft/vscode/issues/456');
+
+      expect(result).toEqual({
+        owner: 'microsoft',
+        repo: 'vscode',
+        currentUrl: 'https://github.com/microsoft/vscode/issues/456',
+      });
+    });
+
+    it('returns null for non-repository URLs', () => {
+      expect(parseGitHubUrl('https://github.com/explore')).toBeNull();
+      expect(parseGitHubUrl('https://github.com/microsoft')).toBeNull();
+      expect(parseGitHubUrl('https://github.com')).toBeNull();
+    });
+
+    it('handles www subdomain', () => {
+      const result = parseGitHubUrl('https://www.github.com/microsoft/vscode');
+
+      expect(result).toEqual({
+        owner: 'microsoft',
+        repo: 'vscode',
+        currentUrl: 'https://www.github.com/microsoft/vscode',
+      });
+    });
+
+    it('handles http protocol', () => {
+      const result = parseGitHubUrl('http://github.com/microsoft/vscode');
+
+      expect(result).toEqual({
+        owner: 'microsoft',
+        repo: 'vscode',
+        currentUrl: 'http://github.com/microsoft/vscode',
+      });
+    });
+
+    it('returns null for invalid owner/repo names', () => {
+      // Owner too long (>39 chars)
+      const longOwner = 'a'.repeat(40);
+      expect(parseGitHubUrl(`https://github.com/${longOwner}/repo`)).toBeNull();
+
+      // Repo too long (>100 chars)
+      const longRepo = 'r'.repeat(101);
+      expect(parseGitHubUrl(`https://github.com/owner/${longRepo}`)).toBeNull();
     });
   });
 });
