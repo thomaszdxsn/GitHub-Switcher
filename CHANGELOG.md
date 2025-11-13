@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2025-11-13
+
 ### Added
 - **Sidebar Tool Menu**: Fixed-position sidebar button on GitHub repository pages
   - Quick access to 8 third-party developer tools (GitHub.dev, DeepWiki, CodeSandbox, StackBlitz, nbviewer, gitdiagram, gitingest, githistory)
