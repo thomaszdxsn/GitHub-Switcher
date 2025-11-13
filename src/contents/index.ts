@@ -3,29 +3,216 @@
  * Automatically injected on GitHub pages matching manifest patterns
  */
 
-import { COMMIT_HASH } from '@/lib/config';
-import { isGitHubPage } from '@/lib/detectGithub';
+import type { PlasmoContentScript } from 'plasmo';
+import { COMMIT_HASH, TOOLS } from '@/lib/config';
+import { parseGitHubUrl } from '@/lib/detectGithub';
+import { loadPreferences } from '@/lib/storage';
+import type { GeneratedToolLink, MenuState } from '@/lib/types';
+import { generateToolUrl } from '@/lib/urlGenerator';
+import { SidebarButton } from '@/ui/SidebarButton';
+import { ToolDropdown } from '@/ui/ToolDropdown';
 import { log, warn } from '@/utils/logger';
+import { calculateMenuPosition } from '@/utils/positioning';
+
+// Plasmo content script configuration
+export const config: PlasmoContentScript = {
+  matches: ['https://github.com/*/*'],
+  run_at: 'document_end',
+};
+
+// Global state
+let sidebarButton: SidebarButton | null = null;
+let toolDropdown: ToolDropdown | null = null;
+const menuState: MenuState = {
+  isOpen: false,
+  position: 'bottom-right',
+  focusedItemIndex: -1,
+};
+
+/**
+ * Initializes the sidebar button and dropdown
+ */
+async function initialize(): Promise<void> {
+  // Parse current URL
+  const repoContext = parseGitHubUrl();
+  if (!repoContext) {
+    log('Not on a repository page, skipping initialization');
+    return;
+  }
+
+  log(`Repository detected: ${repoContext.owner}/${repoContext.repo}`);
+
+  // Load user preferences
+  const preferences = await loadPreferences();
+
+  // Generate tool links
+  const toolLinks: GeneratedToolLink[] = TOOLS.map((tool) => ({
+    tool,
+    url: generateToolUrl(tool, repoContext),
+    enabled: preferences.enabledTools.includes(tool.order),
+  }));
+
+  // Create sidebar button
+  sidebarButton = new SidebarButton();
+  sidebarButton.mount();
+
+  // Create dropdown
+  toolDropdown = new ToolDropdown();
+
+  // Set up button click handler
+  sidebarButton.onToggle(() => {
+    toggleMenu(toolLinks);
+  });
+
+  // Set up dropdown close handler
+  toolDropdown.onClose(() => {
+    closeMenu();
+  });
+
+  log('Sidebar initialized successfully');
+}
+
+/**
+ * Toggles the dropdown menu open/closed
+ */
+function toggleMenu(toolLinks: GeneratedToolLink[]): void {
+  if (menuState.isOpen) {
+    closeMenu();
+  } else {
+    openMenu(toolLinks);
+  }
+}
+
+/**
+ * Opens the dropdown menu
+ */
+function openMenu(toolLinks: GeneratedToolLink[]): void {
+  if (!sidebarButton || !toolDropdown) return;
+
+  const buttonElement = sidebarButton.getButtonElement();
+  if (!buttonElement) return;
+
+  // Calculate menu position - start from button's vertical center
+  const buttonRect = buttonElement.getBoundingClientRect();
+  const menuHeight = 300; // Approximate height for 8 items
+  const position = calculateMenuPosition(buttonRect, menuHeight);
+
+  // Adjust vertical position to center align with button
+  const buttonCenterY = buttonRect.top + buttonRect.height / 2;
+  position.top = buttonCenterY - 20; // Start slightly above center for better visual balance
+
+  // Adjust horizontal position - add 2px gap between button and menu (plus arrow width)
+  // Arrow is 8px wide, so total offset = buttonWidth + gap + arrowWidth
+  position.left = buttonRect.right + 2 + 8; // 2px gap + 8px arrow
+
+  // Show dropdown
+  toolDropdown.show(toolLinks, position);
+
+  // Update state
+  menuState.isOpen = true;
+  menuState.position = position.position;
+  sidebarButton.setExpanded(true);
+
+  log('Menu opened');
+}
+
+/**
+ * Closes the dropdown menu
+ */
+function closeMenu(): void {
+  if (!toolDropdown || !sidebarButton) return;
+
+  toolDropdown.hide();
+
+  // Update state
+  menuState.isOpen = false;
+  menuState.focusedItemIndex = -1;
+  sidebarButton.setExpanded(false);
+
+  log('Menu closed');
+}
+
+/**
+ * Handles window resize events
+ */
+function handleWindowResize(): void {
+  if (!menuState.isOpen || !sidebarButton || !toolDropdown) return;
+
+  const buttonElement = sidebarButton.getButtonElement();
+  if (!buttonElement) return;
+
+  // Recalculate menu position
+  const buttonRect = buttonElement.getBoundingClientRect();
+  const menuHeight = 300; // Approximate height for 8 items
+  const position = calculateMenuPosition(buttonRect, menuHeight);
+
+  // Update dropdown position
+  const menuElement = toolDropdown.getMenuElement();
+  if (menuElement) {
+    menuElement.style.top = `${position.top}px`;
+    menuElement.style.left = `${position.left}px`;
+    menuState.position = position.position;
+  }
+}
+
+/**
+ * Handles navigation events (popstate, turbo:load)
+ * Re-initializes extension if still on a repository page
+ */
+async function handleNavigation(): Promise<void> {
+  log('Navigation detected, checking URL...');
+
+  const repoContext = parseGitHubUrl();
+
+  // If we moved away from a repository page, cleanup
+  if (!repoContext) {
+    log('Navigated away from repository page, cleaning up');
+    cleanup();
+    return;
+  }
+
+  // If we're still on a repository page, re-initialize
+  log('Still on repository page, re-initializing');
+  cleanup();
+  await initialize();
+}
+
+/**
+ * Cleans up the extension (removes button and dropdown)
+ */
+function cleanup(): void {
+  if (sidebarButton) {
+    sidebarButton.unmount();
+    sidebarButton = null;
+  }
+  if (toolDropdown) {
+    toolDropdown.unmount();
+    toolDropdown = null;
+  }
+  menuState.isOpen = false;
+
+  log('Cleaned up');
+}
 
 /**
  * Main content script execution
  */
 (async function main() {
-  // Log extension loading
-  log(`content loaded@${COMMIT_HASH}`);
+  log(`GitHub Switcher loaded@${COMMIT_HASH}`);
 
-  // Detect GitHub page
-  const detection = isGitHubPage();
-  if (!detection.isGitHub) {
-    warn('Not on GitHub page, exiting');
-    return;
+  try {
+    await initialize();
+
+    // Add window resize listener
+    window.addEventListener('resize', handleWindowResize);
+
+    // Add navigation listeners for GitHub SPA
+    window.addEventListener('popstate', handleNavigation);
+    document.addEventListener('turbo:load', handleNavigation);
+
+    // Add beforeunload listener for cleanup
+    window.addEventListener('beforeunload', cleanup);
+  } catch (error) {
+    warn('Failed to initialize:', error);
   }
-
-  log('GitHub page detected:', detection.pathname);
-
-  // TODO: Implement DOM manipulation here
-  // - Add account switcher button
-  // - Inject team selection UI
-  // - Handle account switching logic
-  log('Ready for DOM injection implementation');
 })();

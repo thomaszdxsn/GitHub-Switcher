@@ -1,6 +1,43 @@
 # GitHub-Switcher
 
-A Chrome browser extension for enhancing GitHub workflow.
+A Chrome browser extension that adds a convenient sidebar button to GitHub repository pages, providing quick access to third-party developer tools.
+
+## Features
+
+### Sidebar Tool Menu
+
+When viewing any GitHub repository, a sidebar button appears on the left side of the page. Click it to access a dropdown menu with 8 third-party tools:
+
+- **GitHub.dev** - Open repository in VS Code for the Web
+- **DeepWiki** - AI-powered documentation explorer
+- **CodeSandbox** - Online code editor and development environment
+- **StackBlitz** - Instant full-stack web development environment
+- **nbviewer** (Jupyter Notebook viewer) - View Jupyter notebooks with better rendering
+- **gitdiagram** - Visualize repository structure as diagrams
+- **gitingest** - Analyze repository metrics and insights
+- **githistory** - Visualize file history and evolution
+
+**Key Features:**
+- ✅ Works on all GitHub repository pages (including sub-paths like files, PRs, issues)
+- ✅ Smart menu positioning - adapts to viewport constraints
+- ✅ Easy dismissal - click outside menu or re-click button to close
+- ✅ Keyboard accessible with ARIA attributes
+- ✅ Handles GitHub SPA navigation - updates automatically when navigating between repositories
+
+### Permissions Explained
+
+This extension requires the following permissions:
+
+- **`https://github.com/*/*`** - Access to GitHub repository pages to inject the sidebar button
+- **`storage`** - Store user preferences (which tools to show, whether to open in new tab)
+
+**Privacy**: This extension does NOT:
+- Collect or transmit any user data
+- Access private repositories without your permission
+- Track browsing history or activity
+- Make network requests to third-party servers
+
+All functionality runs locally in your browser. The extension only injects UI elements and opens tool URLs when you click a menu item.
 
 ## Prerequisites
 
