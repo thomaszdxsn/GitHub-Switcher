@@ -8,9 +8,9 @@ GitHub Switcher - Developer Tools Launcher
 
 ## Short Description (max 132 chars)
 ```
-Quick access to 9 developer tools for GitHub repos. Open any repo in GitHub.dev, CodeSandbox, StackBlitz, nbviewer, and more.
+Quick access to 9 developer tools for GitHub repos. Customize tool order, hide unwanted tools. GitHub.dev, CodeSandbox, and more.
 ```
-*Character count: 131*
+*Character count: 130*
 
 ## Detailed Description (recommended 500+ words)
 
@@ -32,6 +32,13 @@ Enhance your GitHub workflow with instant access to third-party developer tools.
 7. **gitdiagram** - Visualize repository structure and dependencies as diagrams
 8. **gitingest** - Analyze repository metrics, complexity, and insights
 9. **githistory** - Interactive file history and code evolution visualization
+
+**Customization & Flexibility:**
+
+⚙️ **Tool Management**: Enable/disable individual tools to declutter your menu
+🔄 **Custom Ordering**: Drag and drop to reorder tools based on your workflow
+🎚️ **Reset Anytime**: Restore default settings with one click
+💾 **Sync Across Devices**: Your preferences automatically sync via Chrome Sync
 
 **Why Use GitHub Switcher?**
 
@@ -58,7 +65,15 @@ Enhance your GitHub workflow with instant access to third-party developer tools.
 3. **Select a tool** from the dropdown menu
 4. **Tool opens automatically** with the correct repository context
 
-That's it! No configuration needed - works out of the box on all GitHub repo pages.
+**Customize Your Experience** (Optional):
+
+1. **Right-click the extension icon** in Chrome toolbar
+2. **Select "Options"** to open settings page
+3. **Enable/disable tools** using toggle switches
+4. **Drag and drop** to reorder tools by priority
+5. **Click "Reset to Defaults"** to restore original settings
+
+That's it! Works out of the box, customize later if needed.
 
 ## 🔐 Privacy & Permissions
 
@@ -88,8 +103,8 @@ See our full [Privacy Policy](https://thomaszdxsn.github.io/GitHub-Switcher/PRIV
 ## 🛠️ Technical Details
 
 - **Framework**: Built with Plasmo (Manifest V3 compliant)
-- **Bundle Size**: ~14KB uncompressed, ~4.4KB gzipped (lightning fast!)
-- **Test Coverage**: 100% coverage on core utilities
+- **Bundle Size**: ~50KB uncompressed, ~6KB gzipped (lightning fast!)
+- **Test Coverage**: 97% coverage on core utilities (127 tests)
 - **Browser Support**: Chrome 88+, Edge 88+ (Manifest V3)
 - **License**: MIT (open source)
 
@@ -113,21 +128,33 @@ Need help? Have a feature request?
 ## 🎯 Roadmap
 
 Upcoming features in development:
-- Custom tool configuration (add your own tools)
-- Tool search and filtering
+- ~~Custom tool configuration (add your own tools)~~ ✅ **Shipped in v0.4.0**
+- ~~Tool search and filtering~~ ✅ **Shipped in v0.4.0** (enable/disable)
 - Keyboard shortcuts (e.g., `Ctrl+K` to open menu)
+- Add your own custom tools (URL templates)
 - More third-party tool integrations
 - Firefox and Safari support
 
 ## ⭐ Version History
 
-**v1.0.0** (Current Release)
-- Initial release with 9 integrated tools
-- Sidebar button with fixed positioning
-- Smart menu positioning (adapts to viewport)
-- Full keyboard and screen reader accessibility
+**v0.4.0** (Upcoming Release)
+- Tool management settings page
+- Enable/disable individual tools
+- Drag & drop tool reordering
+- Reset to default settings
+- 97% test coverage (127 passing tests)
+- SortableJS integration for smooth UX
+
+**v0.3.0** (Previous Release)
+- Added CodeWiki as 9th tool
+- Updated tool ordering
+- Enhanced accessibility
+
+**v0.2.0** (Previous Release)
 - GitHub SPA navigation support
-- Preference syncing across devices
+- Smart menu positioning
+- Full keyboard accessibility
+- Initial release with 8 tools
 
 See [CHANGELOG.md](https://github.com/thomaszdxsn/GitHub-Switcher/blob/main/CHANGELOG.md) for detailed release notes.
 
@@ -179,8 +206,8 @@ https://thomaszdxsn.github.io/GitHub-Switcher/PRIVACY_POLICY.html
 **Screenshot 1: Sidebar Button on GitHub Repository**
 > Shows the fixed sidebar button ("Tools" text vertically aligned) on a GitHub repository page. The button is positioned on the left side with high contrast for easy visibility.
 
-**Screenshot 2: Dropdown Menu Open**
-> Displays the dropdown menu with all 8 tool options visible. Shows tool names and optional notes (e.g., "optimal for .ipynb files" for nbviewer). Menu positioned below the button with proper spacing.
+**Screenshot 2: Dropdown Menu with Custom Tools**
+> Displays the dropdown menu showing only enabled tools in custom order. Demonstrates tool management flexibility - users can hide unused tools and prioritize frequently-used ones.
 
 **Screenshot 3: Tool in Action - GitHub.dev**
 > Shows a repository opened in GitHub.dev (VS Code for the Web) after clicking the menu item. Demonstrates the seamless transition from GitHub to the integrated tool.
@@ -188,8 +215,8 @@ https://thomaszdxsn.github.io/GitHub-Switcher/PRIVACY_POLICY.html
 **Screenshot 4: Tool in Action - nbviewer**
 > Shows a Jupyter notebook rendered in nbviewer, demonstrating the specialized tool integration for data science workflows.
 
-**Screenshot 5: Menu Positioning Adaptation**
-> Shows how the menu adapts its position when near viewport edges (top-right positioning when button is near bottom of viewport).
+**Screenshot 5: Tool Management Settings Page**
+> Shows the options page with tool list, enable/disable switches, drag-and-drop handles, and reset button. Demonstrates customization capabilities (reorder tools, toggle visibility).
 
 ---
 
