@@ -199,8 +199,10 @@ async function handleDragEnd(newOrder: number[]): Promise<void> {
     const result = await loadToolConfigurationForOptions();
     currentPreferences = result.config;
 
-    // Update preview
-    updatePreview();
+    // Update preview (use setTimeout to ensure state is updated)
+    setTimeout(() => {
+      updatePreview();
+    }, 0);
 
     logger.log('[Options] Tool order saved successfully');
   } catch (error) {

@@ -1,5 +1,6 @@
 import Sortable from 'sortablejs';
 import { getToolDescription, TOOLS, type ToolEntry } from '../../lib/config';
+import { TOOL_ICONS } from '../../lib/icons';
 import { getToolOrder } from '../../lib/optionsStateManager';
 import type { UserPreferences } from '../../lib/types';
 
@@ -133,8 +134,10 @@ export class ToolList {
     // Tool icon
     const icon = document.createElement('img');
     icon.className = '__github-switcher-tool-icon';
-    icon.src = chrome.runtime.getURL(`assets/${tool.iconPath}`);
+    icon.src = TOOL_ICONS[tool.name] || '';
     icon.alt = `${tool.name} icon`;
+    icon.width = 16;
+    icon.height = 16;
     item.appendChild(icon);
 
     // Tool info container
