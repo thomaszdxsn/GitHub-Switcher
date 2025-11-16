@@ -460,4 +460,163 @@ describe('toolStateManager', () => {
       expect(resultWithNull.enabled).toBe(true);
     });
   });
+
+  // 新增测试：支持 RepositoryContext（修复问题：仓库主页所有工具都被禁用）
+  describe('tools with RepositoryContext (repo homepage)', () => {
+    it('should enable tools without enableCondition on repository homepage', () => {
+      // 模拟没有 enableCondition 的工具（如 GitHub.dev, DeepWiki 等）
+      const githubDevTool: ToolEntry = {
+        name: 'GitHub.dev',
+        urlTemplate: 'https://github.dev/{owner}/{repo}',
+        order: 1,
+        iconPath: 'logo/github.dev-16x16.png',
+        // 没有 enableCondition
+      };
+
+      const repoContext: import('@/lib/types').RepositoryContext = {
+        owner: 'microsoft',
+        repo: 'vscode',
+        currentUrl: 'https://github.com/microsoft/vscode',
+      };
+
+      const result = computeToolState(githubDevTool, repoContext);
+
+      expect(result.enabled).toBe(true);
+      expect(result.toolName).toBe('GitHub.dev');
+      expect(result.url).toBe('https://github.dev/microsoft/vscode');
+      expect(result.disabledReason).toBeNull();
+    });
+
+    it('should disable githistory on repository homepage with RepositoryContext', () => {
+      const githistoryTool: ToolEntry = {
+        name: 'githistory',
+        urlTemplate: 'https://github.githistory.xyz/{owner}/{repo}/blob/{ref}/{filepath}',
+        order: 9,
+        iconPath: 'logo/githistory-16x16.png',
+        enableCondition: {
+          requiresFilePath: true,
+          fileExtensions: [],
+        },
+      };
+
+      const repoContext: import('@/lib/types').RepositoryContext = {
+        owner: 'microsoft',
+        repo: 'vscode',
+        currentUrl: 'https://github.com/microsoft/vscode',
+      };
+
+      const result = computeToolState(githistoryTool, repoContext);
+
+      expect(result.enabled).toBe(false);
+      expect(result.toolName).toBe('githistory');
+      expect(result.url).toBeNull();
+      expect(result.disabledReason).toBe('仅适用于文件页面');
+    });
+
+    it('should disable nbviewer on repository homepage with RepositoryContext', () => {
+      const nbviewerTool: ToolEntry = {
+        name: 'nbviewer',
+        urlTemplate: 'https://nbviewer.org/github/{owner}/{repo}/blob/{ref}/{filepath}',
+        order: 6,
+        iconPath: 'logo/nbviewer.org-16x16.png',
+        enableCondition: {
+          requiresFilePath: true,
+          fileExtensions: ['ipynb'],
+        },
+      };
+
+      const repoContext: import('@/lib/types').RepositoryContext = {
+        owner: 'owner',
+        repo: 'repo',
+        currentUrl: 'https://github.com/owner/repo',
+      };
+
+      const result = computeToolState(nbviewerTool, repoContext);
+
+      expect(result.enabled).toBe(false);
+      expect(result.disabledReason).toBe('仅适用于文件页面');
+    });
+
+    it('should compute all tools correctly on repository homepage', () => {
+      const tools: ToolEntry[] = [
+        {
+          name: 'GitHub.dev',
+          urlTemplate: 'https://github.dev/{owner}/{repo}',
+          order: 1,
+          iconPath: 'logo/github.dev-16x16.png',
+        },
+        {
+          name: 'githistory',
+          urlTemplate: 'https://github.githistory.xyz/{owner}/{repo}/blob/{ref}/{filepath}',
+          order: 9,
+          iconPath: 'logo/githistory-16x16.png',
+          enableCondition: {
+            requiresFilePath: true,
+            fileExtensions: [],
+          },
+        },
+        {
+          name: 'nbviewer',
+          urlTemplate: 'https://nbviewer.org/github/{owner}/{repo}/blob/{ref}/{filepath}',
+          order: 6,
+          iconPath: 'logo/nbviewer.org-16x16.png',
+          enableCondition: {
+            requiresFilePath: true,
+            fileExtensions: ['ipynb'],
+          },
+        },
+      ];
+
+      const repoContext: import('@/lib/types').RepositoryContext = {
+        owner: 'owner',
+        repo: 'repo',
+        currentUrl: 'https://github.com/owner/repo',
+      };
+
+      const results = computeAllToolStates(tools, repoContext);
+
+      // GitHub.dev 应该启用 (没有 enableCondition)
+      expect(results.get('GitHub.dev')?.enabled).toBe(true);
+      expect(results.get('GitHub.dev')?.url).toBe('https://github.dev/owner/repo');
+
+      // githistory 和 nbviewer 应该禁用 (需要文件路径)
+      expect(results.get('githistory')?.enabled).toBe(false);
+      expect(results.get('nbviewer')?.enabled).toBe(false);
+    });
+
+    it('should handle mixed context types correctly', () => {
+      const tool: ToolEntry = {
+        name: 'DeepWiki',
+        urlTemplate: 'https://deepwiki.com/{owner}/{repo}',
+        order: 2,
+        iconPath: 'logo/deepwiki-16x16.png',
+      };
+
+      const repoContext: import('@/lib/types').RepositoryContext = {
+        owner: 'facebook',
+        repo: 'react',
+        currentUrl: 'https://github.com/facebook/react',
+      };
+
+      const fileContext: FileContext = {
+        owner: 'facebook',
+        repo: 'react',
+        ref: 'main',
+        filePath: 'README.md',
+        extension: 'md',
+        query: null,
+        hash: null,
+        currentUrl: 'https://github.com/facebook/react/blob/main/README.md',
+      };
+
+      const resultRepo = computeToolState(tool, repoContext);
+      const resultFile = computeToolState(tool, fileContext);
+
+      // 两种上下文都应该启用（没有 enableCondition）
+      expect(resultRepo.enabled).toBe(true);
+      expect(resultRepo.url).toBe('https://deepwiki.com/facebook/react');
+      expect(resultFile.enabled).toBe(true);
+      expect(resultFile.url).toBe('https://deepwiki.com/facebook/react');
+    });
+  });
 });

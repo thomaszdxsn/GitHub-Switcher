@@ -3,6 +3,24 @@ import type { FileContext, RepositoryContext, ToolState } from './types';
 import { generateToolUrl } from './urlGenerator';
 
 /**
+ * 工具状态管理器：计算工具在不同页面上下文中的启用/禁用状态
+ * Tool State Manager: Computes enabled/disabled state of tools based on page context
+ *
+ * 核心功能 Core Features:
+ * - 支持文件上下文（FileContext）和仓库上下文（RepositoryContext）
+ * - 根据 enableCondition 规则判断工具可用性
+ * - LRU 缓存优化重复计算（最多 100 条）
+ * - 大小写不敏感的文件扩展名匹配
+ *
+ * 使用场景 Use Cases:
+ * - 文件页面: 传入 FileContext，文件相关工具（githistory, nbviewer）可启用
+ * - 仓库主页: 传入 RepositoryContext，仓库级工具（GitHub.dev, DeepWiki 等）可启用
+ * - 其他页面: 传入 null，只有无条件工具可启用
+ *
+ * @module toolStateManager
+ */
+
+/**
  * LRU 缓存：存储已计算的工具状态，避免重复计算
  * LRU Cache: Stores computed tool states to avoid recomputation
  * 最多缓存 100 条记录，插入时若超限则驱逐最旧条目，无 TTL 过期
@@ -39,7 +57,7 @@ export function clearCache(): void {
  * 4. 其他情况启用 Otherwise enabled
  *
  * @param tool - 工具配置 Tool configuration
- * @param context - 文件上下文或 null（仓库主页/目录页）File context or null (repo/directory page)
+ * @param context - 文件上下文、仓库上下文或 null File context, repository context, or null
  * @returns 工具状态 Tool state
  *
  * @example
@@ -48,7 +66,10 @@ export function clearCache(): void {
  * computeToolState(githistory, fileContext);
  * // { toolName: 'githistory', enabled: true, url: 'https://...', disabledReason: null }
  */
-export function computeToolState(tool: ToolEntry, context: FileContext | null): ToolState {
+export function computeToolState(
+  tool: ToolEntry,
+  context: FileContext | RepositoryContext | null
+): ToolState {
   // 检查缓存 Check cache
   const cacheKey = getCacheKey(tool.name, context);
   const cached = stateCache.get(cacheKey);
@@ -76,23 +97,16 @@ export function computeToolState(tool: ToolEntry, context: FileContext | null): 
  * 内部函数：实际计算工具状态（无缓存）
  * Internal function: actual state computation (no caching)
  */
-function computeToolStateInternal(tool: ToolEntry, context: FileContext | null): ToolState {
+function computeToolStateInternal(
+  tool: ToolEntry,
+  context: FileContext | RepositoryContext | null
+): ToolState {
   const toolName = tool.name;
 
   // 如果没有启用条件，总是启用 No enable condition = always enabled
   if (!tool.enableCondition) {
-    // 尝试生成 URL Try to generate URL
-    let url: string | null = null;
-    if (context) {
-      // 对于无 enableCondition 的工具，使用 RepositoryContext 生成 URL
-      // For tools without enableCondition, use RepositoryContext to generate URL
-      const repoContext: RepositoryContext = {
-        owner: context.owner,
-        repo: context.repo,
-        currentUrl: context.currentUrl,
-      };
-      url = generateToolUrl(tool, repoContext);
-    }
+    // 生成 URL（支持仓库和文件上下文）Generate URL (supports both repo and file context)
+    const url = context ? generateToolUrl(tool, context) : null;
 
     return {
       toolName,
@@ -103,7 +117,8 @@ function computeToolStateInternal(tool: ToolEntry, context: FileContext | null):
   }
 
   // 检查是否需要文件路径 Check if file path is required
-  if (tool.enableCondition.requiresFilePath && !context) {
+  const isFileContext = context && 'filePath' in context;
+  if (tool.enableCondition.requiresFilePath && !isFileContext) {
     return {
       toolName,
       enabled: false,
@@ -115,7 +130,7 @@ function computeToolStateInternal(tool: ToolEntry, context: FileContext | null):
   // 检查扩展名限制 Check file extension restrictions
   if (tool.enableCondition.fileExtensions && tool.enableCondition.fileExtensions.length > 0) {
     // 有扩展名限制 Has extension restrictions
-    if (!context) {
+    if (!isFileContext) {
       return {
         toolName,
         enabled: false,
@@ -125,7 +140,7 @@ function computeToolStateInternal(tool: ToolEntry, context: FileContext | null):
     }
 
     const allowedExtensions = tool.enableCondition.fileExtensions;
-    const fileExtension = context.extension; // 已经是小写 Already lowercase
+    const fileExtension = (context as FileContext).extension; // 已经是小写 Already lowercase
 
     if (!allowedExtensions.includes(fileExtension)) {
       // 扩展名不匹配 Extension mismatch
@@ -154,7 +169,7 @@ function computeToolStateInternal(tool: ToolEntry, context: FileContext | null):
  * Computes states for all tools
  *
  * @param tools - 工具配置列表 List of tool configurations
- * @param context - 文件上下文或 null File context or null
+ * @param context - 文件上下文、仓库上下文或 null File context, repository context, or null
  * @returns Map<工具名, 工具状态> Map of tool name to tool state
  *
  * @example
@@ -166,7 +181,7 @@ function computeToolStateInternal(tool: ToolEntry, context: FileContext | null):
  */
 export function computeAllToolStates(
   tools: readonly ToolEntry[],
-  context: FileContext | null
+  context: FileContext | RepositoryContext | null
 ): Map<string, ToolState> {
   const result = new Map<string, ToolState>();
 

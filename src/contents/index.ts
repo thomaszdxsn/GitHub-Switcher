@@ -35,6 +35,8 @@ const menuState: MenuState = {
 async function initialize(): Promise<void> {
   // Parse current URL - try file URL first
   const fileContext = parseGitHubFileUrl();
+  let context: import('@/lib/types').FileContext | import('@/lib/types').RepositoryContext | null =
+    fileContext;
 
   // If not a file page, check if it's a repo page
   if (!fileContext) {
@@ -44,6 +46,7 @@ async function initialize(): Promise<void> {
       return;
     }
     log(`Repository detected: ${repoContext.owner}/${repoContext.repo}`);
+    context = repoContext; // Use repo context for non-file pages
   } else {
     log(
       `File detected: ${fileContext.owner}/${fileContext.repo}/blob/${fileContext.ref}/${fileContext.filePath}`
@@ -54,17 +57,10 @@ async function initialize(): Promise<void> {
   const preferences = await loadPreferences();
 
   // T038: Compute tool states using toolStateManager
-  // Pass fileContext (which is FileContext | null - null means repo page)
-  const allToolStates = computeAllToolStates(TOOLS, fileContext);
-
-  // Filter by user preferences (only include enabled tools)
-  const toolStates = new Map(
-    Array.from(allToolStates.entries()).filter(([_, state]) => {
-      // Find tool by name to check user preferences
-      const tool = TOOLS.find((t) => t.name === state.toolName);
-      return tool && preferences.enabledTools.includes(tool.order);
-    })
-  );
+  // Pass context (FileContext on file pages, RepositoryContext on repo pages)
+  // Filter tools by user preferences BEFORE computing states
+  const enabledTools = TOOLS.filter((tool) => preferences.enabledTools.includes(tool.order));
+  const toolStates = computeAllToolStates(enabledTools, context);
 
   // Create sidebar button
   sidebarButton = new SidebarButton();

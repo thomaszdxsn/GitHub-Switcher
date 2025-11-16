@@ -42,7 +42,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Content script now uses file context detection for intelligent tool state computation
 - Tool count increased from 8 to 9
 - Updated tool order: CodeSandbox through githistory now numbered 4-9 (previously 3-8)
-- Test coverage increased to 95.87% (84 tests passing)
+- Test coverage increased to 95.87% (89 tests passing)
+- Default enabled tools list now includes all 9 tools `[1, 2, 3, 4, 5, 6, 7, 8, 9]`
+
+### Fixed
+- **Tool State Manager**: Now correctly handles `RepositoryContext` in addition to `FileContext`
+  - Fixed issue where tools without `enableCondition` were disabled on repository homepage
+  - Tools like GitHub.dev, DeepWiki, CodeWiki now work correctly on repository pages
+  - Added 5 new test cases to prevent regression (89 total tests)
+- **Context Detection**: Content script now passes `RepositoryContext` on repo pages instead of `null`
+  - Enables proper URL generation for repository-level tools
+  - File-aware tools (githistory, nbviewer) correctly disabled on non-file pages
 
 ## [1.0.0] - 2025-11-13
 

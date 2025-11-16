@@ -6,7 +6,7 @@ import type { UserPreferences } from './types';
  */
 export const DEFAULT_PREFERENCES: UserPreferences = {
   openInNewTab: true,
-  enabledTools: [1, 2, 3, 4, 5, 6, 7, 8],
+  enabledTools: [1, 2, 3, 4, 5, 6, 7, 8, 9],
 };
 
 /**
