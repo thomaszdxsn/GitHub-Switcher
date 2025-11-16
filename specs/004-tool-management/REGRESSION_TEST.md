@@ -9,6 +9,16 @@
 
 This document contains regression test cases to prevent the 5 bugs discovered during manual testing from recurring. Execute these tests after any code changes to Options page or ToolList component.
 
+**IMPORTANT**: After fixing Bug #2-5, a new critical bug was discovered:
+
+### Bug #6: Dynamic Import Runtime Error (CRITICAL - FIXED)
+
+**Issue**: Extension alert shows "require(...).then is not a function"  
+**Root Cause**: `updatePreview()` used dynamic `import('./lib/config')` which is not supported in Chrome extension context  
+**Impact**: Options page fails to initialize completely  
+**Fix Commit**: 509dc04 - Changed to static import at file top  
+**Prevention**: Always use static imports in Chrome extensions, avoid dynamic `import()` syntax
+
 ---
 
 ## Test Environment Setup
