@@ -190,6 +190,51 @@ async function handleNavigation(): Promise<void> {
 }
 
 /**
+ * Handles user preference changes from options page
+ */
+async function handleStorageChange(
+  changes: { [key: string]: chrome.storage.StorageChange },
+  areaName: string
+): Promise<void> {
+  // Only handle sync storage changes
+  if (areaName !== 'sync') {
+    return;
+  }
+
+  // Check if enabledTools or toolOrder changed
+  const enabledToolsChanged = changes.enabledTools !== undefined;
+  const toolOrderChanged = changes.toolOrder !== undefined;
+
+  if (!enabledToolsChanged && !toolOrderChanged) {
+    return;
+  }
+
+  log('User preferences changed, updating dropdown menu');
+
+  // If menu is currently open, update it
+  if (toolDropdown && menuState.isOpen) {
+    // Try file URL first, fallback to repo URL
+    const fileContext = parseGitHubFileUrl();
+    const repoContext = fileContext || parseGitHubUrl();
+
+    if (repoContext) {
+      try {
+        // Reload user preferences
+        const preferences = await loadPreferences();
+
+        // Recompute tool states with new preferences
+        const enabledTools = TOOLS.filter((tool) => preferences.enabledTools.includes(tool.order));
+        const toolStates = computeAllToolStates(enabledTools, repoContext);
+        toolDropdown.updateTools(toolStates);
+        log('Dropdown menu updated with new tool states');
+      } catch (error) {
+        warn('Failed to update dropdown menu:', error);
+      }
+    }
+  }
+}
+
+/**
  * Cleans up the extension (removes button and dropdown)
  */
 function cleanup(): void {
@@ -221,6 +266,9 @@ function cleanup(): void {
     // Add navigation listeners for GitHub SPA
     window.addEventListener('popstate', handleNavigation);
     document.addEventListener('turbo:load', handleNavigation);
+
+    // Add storage change listener for options page updates
+    chrome.storage.onChanged.addListener(handleStorageChange);
 
     // Add beforeunload listener for cleanup
     window.addEventListener('beforeunload', cleanup);

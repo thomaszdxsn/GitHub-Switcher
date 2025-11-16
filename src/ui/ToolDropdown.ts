@@ -306,6 +306,47 @@ export class ToolDropdown {
   };
 
   /**
+   * Updates the tool list in the dropdown menu with new tool states
+   * @param toolStates - Map of tool IDs to their states (enabled + URL)
+   */
+  public updateTools(toolStates: Map<string, ToolState>): void {
+    if (!this.menu || !this.menuContainer) {
+      // Menu not currently shown, nothing to update
+      return;
+    }
+
+    // Store current position
+    const currentTop = this.menu.style.top;
+    const currentLeft = this.menu.style.left;
+
+    // Remove old menu from DOM
+    if (this.menu.parentNode) {
+      this.menu.parentNode.removeChild(this.menu);
+    }
+
+    // Create new menu with updated tool states
+    this.menu = this.createMenu(toolStates);
+
+    // Restore position
+    this.menu.style.top = currentTop;
+    this.menu.style.left = currentLeft;
+
+    // Update container reference
+    this.menuContainer = this.menu as unknown as HTMLDivElement;
+    document.body.appendChild(this.menu);
+
+    // Re-add click handler for links
+    this.menu.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'A' || target.closest('a')) {
+        if (this.onCloseCallback) {
+          this.onCloseCallback();
+        }
+      }
+    });
+  }
+
+  /**
    * Hides the dropdown menu
    */
   public hide(): void {
