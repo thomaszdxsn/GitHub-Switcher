@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { ToolEntry } from '../../src/lib/config';
+import { TOOLS, type ToolEntry } from '../../src/lib/config';
 import type { RepositoryContext } from '../../src/lib/types';
 import { generateToolUrl } from '../../src/lib/urlGenerator';
 
@@ -15,6 +15,7 @@ describe('generateToolUrl', () => {
       name: 'TestTool',
       urlTemplate: 'https://example.com/{owner}/{repo}',
       order: 1,
+      iconPath: 'logo/test-16x16.png',
     };
 
     const result = generateToolUrl(tool, mockContext);
@@ -26,6 +27,7 @@ describe('generateToolUrl', () => {
       name: 'GitHub.dev',
       urlTemplate: 'https://github.dev/{owner}/{repo}',
       order: 1,
+      iconPath: 'logo/github.dev-16x16.png',
     };
 
     const result = generateToolUrl(tool, mockContext);
@@ -37,6 +39,7 @@ describe('generateToolUrl', () => {
       name: 'StackBlitz',
       urlTemplate: 'https://stackblitz.com/github/{owner}/{repo}',
       order: 4,
+      iconPath: 'logo/stackblitz-16x16.png',
     };
 
     const result = generateToolUrl(tool, mockContext);
@@ -54,6 +57,7 @@ describe('generateToolUrl', () => {
       name: 'TestTool',
       urlTemplate: 'https://example.com/{owner}/{repo}',
       order: 1,
+      iconPath: 'logo/test-16x16.png',
     };
 
     const result = generateToolUrl(tool, context);
@@ -71,29 +75,53 @@ describe('generateToolUrl', () => {
       name: 'TestTool',
       urlTemplate: 'https://example.com/{owner}/{repo}',
       order: 1,
+      iconPath: 'logo/test-16x16.png',
     };
 
     const result = generateToolUrl(tool, context);
     expect(result).toBe('https://example.com/owner/repo%20name%20with%20spaces');
   });
 
-  it('should handle all 8 production tools correctly', () => {
-    const tools: ToolEntry[] = [
-      { name: 'GitHub.dev', urlTemplate: 'https://github.dev/{owner}/{repo}', order: 1 },
-      { name: 'DeepWiki', urlTemplate: 'https://deepwiki.com/{owner}/{repo}', order: 2 },
-      { name: 'CodeSandbox', urlTemplate: 'https://githubbox.com/{owner}/{repo}', order: 3 },
-      { name: 'StackBlitz', urlTemplate: 'https://stackblitz.com/github/{owner}/{repo}', order: 4 },
-      { name: 'nbviewer', urlTemplate: 'https://nbviewer.org/github/{owner}/{repo}', order: 5 },
-      { name: 'gitdiagram', urlTemplate: 'https://gitdiagram.com/{owner}/{repo}', order: 6 },
-      { name: 'gitingest', urlTemplate: 'https://gitingest.com/{owner}/{repo}', order: 7 },
-      { name: 'githistory', urlTemplate: 'https://github.githistory.xyz/{owner}/{repo}', order: 8 },
-    ];
-
-    tools.forEach((tool) => {
+  it('should handle all production tools correctly', () => {
+    // Use actual production tools from config
+    TOOLS.forEach((tool) => {
       const result = generateToolUrl(tool, mockContext);
       expect(result).toContain('microsoft/vscode');
       expect(result).toMatch(/^https:\/\//);
+      // Ensure placeholders are replaced
+      expect(result).not.toContain('{owner}');
+      expect(result).not.toContain('{repo}');
     });
+  });
+
+  it('should generate CodeWiki URL correctly', () => {
+    const tool: ToolEntry = {
+      name: 'CodeWiki',
+      urlTemplate: 'https://codewiki.google/{owner}/{repo}',
+      order: 3,
+      iconPath: 'logo/codewiki-16x16.png',
+    };
+
+    const result = generateToolUrl(tool, mockContext);
+    expect(result).toBe('https://codewiki.google/microsoft/vscode');
+  });
+
+  it('should handle CodeWiki with special characters in repo name', () => {
+    const context: RepositoryContext = {
+      owner: 'Lencerf',
+      repo: 'vscode-beancount',
+      currentUrl: 'https://github.com/Lencerf/vscode-beancount',
+    };
+
+    const tool: ToolEntry = {
+      name: 'CodeWiki',
+      urlTemplate: 'https://codewiki.google/{owner}/{repo}',
+      order: 3,
+      iconPath: 'logo/codewiki-16x16.png',
+    };
+
+    const result = generateToolUrl(tool, context);
+    expect(result).toBe('https://codewiki.google/Lencerf/vscode-beancount');
   });
 
   it('should handle empty owner gracefully', () => {
@@ -107,6 +135,7 @@ describe('generateToolUrl', () => {
       name: 'TestTool',
       urlTemplate: 'https://example.com/{owner}/{repo}',
       order: 1,
+      iconPath: 'logo/test-16x16.png',
     };
 
     const result = generateToolUrl(tool, context);
@@ -124,6 +153,7 @@ describe('generateToolUrl', () => {
       name: 'TestTool',
       urlTemplate: 'https://example.com/{owner}/{repo}',
       order: 1,
+      iconPath: 'logo/test-16x16.png',
     };
 
     const result = generateToolUrl(tool, context);

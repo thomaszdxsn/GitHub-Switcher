@@ -1,6 +1,18 @@
 # GitHub-Switcher Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2025-11-12
+Auto-generated from all feature plans. Last updated: 2025-11-15
+
+## 文档语言要求 (Documentation Language Requirement)
+
+**所有项目文档必须使用简体中文编写**，包括但不限于：
+- 功能规格 (spec.md)
+- 实施计划 (plan.md)
+- 任务列表 (tasks.md)
+- 代码注释（业务逻辑部分）
+- Git commit messages
+- README、CHANGELOG 等用户文档
+
+**例外**：代码标识符（变量名、函数名、类名）保持英文，技术术语可保留英文原文并附中文注释。
 
 ## Active Technologies
 - **Chrome Extension**: Plasmo 0.90.5 (Manifest V3 framework) for browser extension development
@@ -131,9 +143,17 @@ async function initialize() {
 ```
 
 ## Recent Changes
+- **2025-11-15** (003-codewiki-integration): Added CodeWiki as 9th tool
+  - Added CodeWiki tool configuration (https://codewiki.google/{owner}/{repo})
+  - Positioned CodeWiki below DeepWiki in tool menu (order: 3)
+  - Updated all tool orders (CodeSandbox 3→4, StackBlitz 4→5, etc.)
+  - Added CodeWiki-specific unit tests (2 new test cases)
+  - Updated documentation (README, STORE_LISTING, spec, CHANGELOG)
+  - Maintained 100% test coverage (41 tests passing)
+
 - **2025-11-12** (002-github-switcher-sidebar): Complete implementation of sidebar tool menu feature
   - Added sidebar button component with vertical text and fixed positioning
-  - Added dropdown menu component with 8 third-party tools
+  - Added dropdown menu component with 9 third-party tools
   - Implemented smart menu positioning (bottom-right/top-right adaptation)
   - Added window resize handling for menu repositioning
   - Implemented GitHub SPA navigation support (popstate, turbo:load)

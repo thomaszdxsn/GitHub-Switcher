@@ -24,15 +24,18 @@ export interface ToolEntry {
   /** URL template with {owner} and {repo} placeholders */
   urlTemplate: string;
 
-  /** Display order in dropdown (1-8) */
+  /** Display order in dropdown (1-9) */
   order: number;
+
+  /** Path to the tool's 16x16 icon (relative to assets/) */
+  iconPath: string;
 
   /** Optional usage note (e.g., "optimal for .ipynb files") */
   note?: string;
 }
 
 /**
- * Static configuration of supported tools (8 tools)
+ * Static configuration of supported tools (9 tools)
  * Ordered by display order in dropdown menu
  */
 export const TOOLS: readonly ToolEntry[] = [
@@ -40,42 +43,56 @@ export const TOOLS: readonly ToolEntry[] = [
     name: 'GitHub.dev',
     urlTemplate: 'https://github.dev/{owner}/{repo}',
     order: 1,
+    iconPath: 'logo/github.dev-16x16.png',
   },
   {
     name: 'DeepWiki',
     urlTemplate: 'https://deepwiki.com/{owner}/{repo}',
     order: 2,
+    iconPath: 'logo/deepwiki-16x16.png',
+  },
+  {
+    name: 'CodeWiki',
+    urlTemplate: 'https://codewiki.google/{owner}/{repo}',
+    order: 3,
+    iconPath: 'logo/codewiki-16x16.png',
   },
   {
     name: 'CodeSandbox',
     urlTemplate: 'https://githubbox.com/{owner}/{repo}',
-    order: 3,
+    order: 4,
+    iconPath: 'logo/codesandbox-16x16.png',
   },
   {
     name: 'StackBlitz',
     urlTemplate: 'https://stackblitz.com/github/{owner}/{repo}',
-    order: 4,
+    order: 5,
+    iconPath: 'logo/stackblitz-16x16.png',
   },
   {
     name: 'nbviewer',
     urlTemplate: 'https://nbviewer.org/github/{owner}/{repo}',
-    order: 5,
+    order: 6,
+    iconPath: 'logo/nbviewer.org-16x16.png',
     note: 'optimal for .ipynb files',
   },
   {
     name: 'gitdiagram',
     urlTemplate: 'https://gitdiagram.com/{owner}/{repo}',
-    order: 6,
+    order: 7,
+    iconPath: 'logo/gitdiagram.com-16x16.png',
   },
   {
     name: 'gitingest',
     urlTemplate: 'https://gitingest.com/{owner}/{repo}',
-    order: 7,
+    order: 8,
+    iconPath: 'logo/gitingest-16x16.png',
   },
   {
     name: 'githistory',
     urlTemplate: 'https://github.githistory.xyz/{owner}/{repo}',
-    order: 8,
+    order: 9,
+    iconPath: 'logo/githistory-16x16.png',
     note: 'optimal for file/folder paths',
   },
 ] as const;

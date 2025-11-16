@@ -420,7 +420,7 @@ function isValidRepositoryContext(ctx: unknown): ctx is RepositoryContext {
                                   ▼
 ┌──────────────────────┐    ┌─────────────────────┐
 │     ToolEntry        │◄───│  TOOLS (constant)   │
-│  - name              │    │  Array of 8 tools   │
+│  - name              │    │  Array of 9 tools   │
 │  - urlTemplate       │    └─────────────────────┘
 │  - order             │
 │  - note?             │

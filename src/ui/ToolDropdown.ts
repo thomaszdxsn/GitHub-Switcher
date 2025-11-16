@@ -1,3 +1,4 @@
+import { TOOL_ICONS } from '../lib/icons';
 import type { GeneratedToolLink, MenuPosition } from '../lib/types';
 
 /**
@@ -34,18 +35,32 @@ export class ToolDropdown {
         anchor.target = '_blank';
         anchor.rel = 'noopener noreferrer';
         anchor.className = '__github-switcher-menu-link';
-        anchor.textContent = link.tool.name;
         anchor.setAttribute('role', 'menuitem');
         anchor.setAttribute('tabindex', '0');
+
+        // Add icon
+        const icon = document.createElement('img');
+        icon.className = '__github-switcher-menu-icon';
+        icon.src = TOOL_ICONS[link.tool.name] || '';
+        icon.alt = `${link.tool.name} icon`;
+        icon.width = 16;
+        icon.height = 16;
+        anchor.appendChild(icon);
+
+        // Add text container
+        const textContainer = document.createElement('span');
+        textContainer.className = '__github-switcher-menu-text';
+        textContainer.textContent = link.tool.name;
 
         // Add note if present
         if (link.tool.note) {
           const note = document.createElement('span');
           note.className = '__github-switcher-menu-note';
           note.textContent = ` (${link.tool.note})`;
-          anchor.appendChild(note);
+          textContainer.appendChild(note);
         }
 
+        anchor.appendChild(textContainer);
         li.appendChild(anchor);
         menu.appendChild(li);
       });
@@ -110,12 +125,25 @@ export class ToolDropdown {
       }
 
       .__github-switcher-menu-link {
-        display: block;
+        display: flex;
+        align-items: center;
         padding: 10px 16px;
         color: #24292f;
         text-decoration: none;
         font-size: 14px;
         transition: background-color 0.1s ease;
+      }
+
+      .__github-switcher-menu-icon {
+        width: 16px;
+        height: 16px;
+        margin-right: 10px;
+        flex-shrink: 0;
+        display: block;
+      }
+
+      .__github-switcher-menu-text {
+        display: inline;
       }
 
       .__github-switcher-menu-link:hover {

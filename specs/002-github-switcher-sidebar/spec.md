@@ -110,11 +110,12 @@ As a GitHub user with limited viewport space, I want the dropdown menu to positi
 - **FR-002**: System MUST NOT display the sidebar button when the URL does not match the repository pattern (e.g., `github.com/explore`, `github.com/owner`)
 - **FR-003**: System MUST parse the current GitHub URL to extract `{owner}` and `{repo}` components, ignoring any subsequent path segments
 - **FR-004**: System MUST display a dropdown menu containing third-party tool options when the sidebar button is clicked
-- **FR-005**: System MUST populate the dropdown menu with exactly these tools in order: (1) GitHub.dev, (2) DeepWiki, (3) CodeSandbox, (4) StackBlitz, (5) nbviewer, (6) gitdiagram, (7) gitingest, (8) githistory
+- **FR-005**: System MUST populate the dropdown menu with exactly these tools in order: (1) GitHub.dev, (2) DeepWiki, (3) CodeWiki, (4) CodeSandbox, (5) StackBlitz, (6) nbviewer, (7) gitdiagram, (8) gitingest, (9) githistory
 - **FR-006**: System MUST display tool names as text-only menu items (no icons or logos)
 - **FR-007**: System MUST generate tool URLs using these templates:
   - GitHub.dev: `github.dev/{owner}/{repo}`
   - DeepWiki: `deepwiki.com/{owner}/{repo}`
+  - CodeWiki: `codewiki.google/{owner}/{repo}`
   - CodeSandbox: `githubbox.com/{owner}/{repo}`
   - StackBlitz: `stackblitz.com/github/{owner}/{repo}`
   - nbviewer: `nbviewer.org/github/{owner}/{repo}` (note: optimal for .ipynb files)
@@ -147,17 +148,18 @@ As a GitHub user with limited viewport space, I want the dropdown menu to positi
 - **Tool Entry**: Represents a third-party tool option, consisting of:
   - `name`: Display name of the tool (English text)
   - `urlTemplate`: URL pattern with `{owner}` and `{repo}` placeholders
-  - `order`: Display order in dropdown (1-8)
+  - `order`: Display order in dropdown (1-9)
   - `note`: Optional usage note (e.g., "optimal for .ipynb files")
   - Supported tools (in display order):
     1. GitHub.dev - `https://github.dev/{owner}/{repo}`
     2. DeepWiki - `https://deepwiki.com/{owner}/{repo}`
-    3. CodeSandbox - `https://githubbox.com/{owner}/{repo}`
-    4. StackBlitz - `https://stackblitz.com/github/{owner}/{repo}`
-    5. nbviewer - `https://nbviewer.org/github/{owner}/{repo}` (optimal for .ipynb files)
-    6. gitdiagram - `https://gitdiagram.com/{owner}/{repo}`
-    7. gitingest - `https://gitingest.com/{owner}/{repo}`
-    8. githistory - `https://github.githistory.xyz/{owner}/{repo}` (optimal for file/folder paths)
+    3. CodeWiki - `https://codewiki.google/{owner}/{repo}`
+    4. CodeSandbox - `https://githubbox.com/{owner}/{repo}`
+    5. StackBlitz - `https://stackblitz.com/github/{owner}/{repo}`
+    6. nbviewer - `https://nbviewer.org/github/{owner}/{repo}` (optimal for .ipynb files)
+    7. gitdiagram - `https://gitdiagram.com/{owner}/{repo}`
+    8. gitingest - `https://gitingest.com/{owner}/{repo}`
+    9. githistory - `https://github.githistory.xyz/{owner}/{repo}` (optimal for file/folder paths)
   
 - **Dropdown Menu State**: Represents the current UI state, consisting of:
   - `isOpen`: Boolean indicating whether menu is visible

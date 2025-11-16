@@ -6,10 +6,11 @@ A Chrome browser extension that adds a convenient sidebar button to GitHub repos
 
 ### Sidebar Tool Menu
 
-When viewing any GitHub repository, a sidebar button appears on the left side of the page. Click it to access a dropdown menu with 8 third-party tools:
+When viewing any GitHub repository, a sidebar button appears on the left side of the page. Click it to access a dropdown menu with 9 third-party tools:
 
 - **GitHub.dev** - Open repository in VS Code for the Web
 - **DeepWiki** - AI-powered documentation explorer
+- **CodeWiki** - AI-enhanced code and documentation browser
 - **CodeSandbox** - Online code editor and development environment
 - **StackBlitz** - Instant full-stack web development environment
 - **nbviewer** (Jupyter Notebook viewer) - View Jupyter notebooks with better rendering

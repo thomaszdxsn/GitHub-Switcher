@@ -33,7 +33,7 @@
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
 - [X] T008 Enhance RepositoryContext type in src/lib/types.ts with validation rules
-- [X] T009 [P] Create ToolEntry interface and TOOLS constant array in src/lib/config.ts (8 tools: GitHub.dev, DeepWiki, CodeSandbox, StackBlitz, nbviewer, gitdiagram, gitingest, githistory)
+- [X] T009 [P] Create ToolEntry interface and TOOLS constant array in src/lib/config.ts (9 tools: GitHub.dev, DeepWiki, CodeWiki, CodeSandbox, StackBlitz, nbviewer, gitdiagram, gitingest, githistory)
 - [X] T010 [P] Create MenuState interface in src/lib/types.ts (isOpen, position, focusedItemIndex)
 - [X] T011 [P] Create UserPreferences interface in src/lib/types.ts (openInNewTab, enabledTools)
 - [X] T012 [P] Create MenuPosition helper type in src/lib/types.ts
@@ -53,9 +53,9 @@
 
 ## Phase 3: User Story 1 - Quick Tool Access from Repository Page (Priority: P1) 🎯 MVP
 
-**Goal**: Display a sidebar sidebar button on GitHub repository pages that opens a dropdown menu with 8 third-party tools. Clicking a tool opens it in a new tab.
+**Goal**: Display a sidebar sidebar button on GitHub repository pages that opens a dropdown menu with 9 third-party tools. Clicking a tool opens it in a new tab.
 
-**Independent Test**: Navigate to https://github.com/microsoft/vscode, verify button appears on left side, click button to open dropdown menu showing 8 tools in order, click "DeepWiki" and verify new tab opens to https://deepwiki.com/microsoft/vscode
+**Independent Test**: Navigate to https://github.com/microsoft/vscode, verify button appears on left side, click button to open dropdown menu showing 9 tools in order, click "DeepWiki" and verify new tab opens to https://deepwiki.com/microsoft/vscode
 
 ### Implementation for User Story 1
 
@@ -169,7 +169,7 @@
 - [x] T067 Verify no console errors or warnings in production build
 - [X] T068 Run constitution compliance check: verify all gates pass
 - [X] T069 Validate all UI text is in English: button label, menu items, and optional notes (FR-016)
-- [X] T070 Validate dropdown menu displays only text (no icons) for all 8 tools (FR-007)
+- [X] T070 Validate dropdown menu displays only text (no icons) for all 9 tools (FR-007)
 - [X] T071 Create CHANGELOG.md entry for this feature
 - [X] T072 Update .github/copilot-instructions.md with final technology summary
 

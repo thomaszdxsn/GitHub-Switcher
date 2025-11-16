@@ -8,7 +8,7 @@
 ## Summary
 
 **Summary**: 
-Implement a browser extension that injects a persistent sidebar button on GitHub repository pages. When clicked, the button displays a dropdown menu with 8 third-party tools (GitHub.dev, DeepWiki, CodeSandbox, StackBlitz, nbviewer, gitdiagram, gitingest, githistory). Users can select any tool to open the current repository in that tool via a new browser tab. The extension uses TypeScript with Plasmo framework (Manifest V3), native CSS (no UI libraries), URL/DOM parsing only (no GitHub API calls), and targets Chrome/Edge latest stable versions.
+Implement a browser extension that injects a persistent sidebar button on GitHub repository pages. When clicked, the button displays a dropdown menu with 9 third-party tools (GitHub.dev, DeepWiki, CodeWiki, CodeSandbox, StackBlitz, nbviewer, gitdiagram, gitingest, githistory). Users can select any tool to open the current repository in that tool via a new browser tab. The extension uses TypeScript with Plasmo framework (Manifest V3), native CSS (no UI libraries), URL/DOM parsing only (no GitHub API calls), and targets Chrome/Edge latest stable versions.
 
 ## Technical Context
 
@@ -142,7 +142,7 @@ All design artifacts have been generated:
 1. ✅ **Data Model**: [data-model.md](./data-model.md)
    - 4 core entities: RepositoryContext, ToolEntry, MenuState, UserPreferences
    - 2 helper types: MenuPosition, GeneratedToolLink
-   - Static tool configuration (8 tools)
+   - Static tool configuration (9 tools)
    - Complete validation rules and state transitions
 
 2. ✅ **API Contracts**: [contracts/README.md](./contracts/README.md)
@@ -223,7 +223,7 @@ src/
 ├── contents/
 │   └── index.ts              # Content script: inject sidebar button, handle GitHub page detection
 ├── lib/
-│   ├── config.ts             # Tool definitions (8 tools with URL templates, order, notes)
+│   ├── config.ts             # Tool definitions (9 tools with URL templates, order, notes)
 │   ├── detectGithub.ts       # URL parser: extract owner/repo from github.com URLs
 │   ├── types.ts              # TypeScript interfaces: RepositoryContext, ToolEntry, MenuState
 │   └── urlGenerator.ts       # NEW: Generate tool URLs from templates + context

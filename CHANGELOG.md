@@ -7,11 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **CodeWiki Integration**: New third-party tool for AI-enhanced code and documentation browsing
+  - Accessible at `https://codewiki.google/{owner}/{repo}`
+  - Positioned below DeepWiki in the tool menu (3rd position)
+  - Includes dedicated unit tests for URL generation and special character handling
+
+### Changed
+- Tool count increased from 8 to 9
+- Updated tool order: CodeSandbox through githistory now numbered 4-9 (previously 3-8)
+- Updated all documentation (README, spec, STORE_LISTING) to reflect 9 tools
+
 ## [1.0.0] - 2025-11-13
 
 ### Added
 - **Sidebar Tool Menu**: Fixed-position sidebar button on GitHub repository pages
-  - Quick access to 8 third-party developer tools (GitHub.dev, DeepWiki, CodeSandbox, StackBlitz, nbviewer, gitdiagram, gitingest, githistory)
+  - Quick access to 9 third-party developer tools (GitHub.dev, DeepWiki, CodeWiki, CodeSandbox, StackBlitz, nbviewer, gitdiagram, gitingest, githistory)
   - Smart menu positioning that adapts to viewport constraints (bottom-right preferred, top-right fallback)
   - Automatic window resize handling for repositioning open menus
 - **Repository Context Support**: Works on all repository pages including sub-paths (files, PRs, issues, folders)
