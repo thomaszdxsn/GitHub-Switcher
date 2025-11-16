@@ -3,6 +3,7 @@
  * Handles initialization, state management, and event handling for the options page
  */
 
+import { TOOLS } from './lib/config';
 import {
   loadToolConfigurationForOptions,
   resetToDefault,
@@ -329,40 +330,35 @@ function updatePreview(): void {
     return;
   }
 
-  // Import TOOLS config
-  import('./lib/config').then(({ TOOLS }) => {
-    if (!previewArea || !currentPreferences) return;
+  const toolOrder = currentPreferences.toolOrder || [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const enabledTools = currentPreferences.enabledTools || [];
 
-    const toolOrder = currentPreferences.toolOrder || [1, 2, 3, 4, 5, 6, 7, 8, 9];
-    const enabledTools = currentPreferences.enabledTools || [];
+  // Clear preview
+  previewArea.innerHTML = '';
 
-    // Clear preview
-    previewArea.innerHTML = '';
+  // Create preview list
+  const previewList = document.createElement('ul');
+  previewList.className = '__github-switcher-preview-list';
 
-    // Create preview list
-    const previewList = document.createElement('ul');
-    previewList.className = '__github-switcher-preview-list';
+  let index = 1;
+  for (const toolId of toolOrder) {
+    if (!enabledTools.includes(toolId)) continue;
 
-    let index = 1;
-    for (const toolId of toolOrder) {
-      if (!enabledTools.includes(toolId)) continue;
+    const tool = TOOLS.find((t) => t.order === toolId);
+    if (!tool) continue;
 
-      const tool = TOOLS.find((t) => t.order === toolId);
-      if (!tool) continue;
+    const listItem = document.createElement('li');
+    listItem.className = '__github-switcher-preview-item';
+    listItem.textContent = `${index}. ${tool.name}`;
+    previewList.appendChild(listItem);
+    index++;
+  }
 
-      const listItem = document.createElement('li');
-      listItem.className = '__github-switcher-preview-item';
-      listItem.textContent = `${index}. ${tool.name}`;
-      previewList.appendChild(listItem);
-      index++;
-    }
-
-    if (index === 1) {
-      previewArea.innerHTML = '<p class="__github-switcher-preview-empty">No tools enabled</p>';
-    } else {
-      previewArea.appendChild(previewList);
-    }
-  });
+  if (index === 1) {
+    previewArea.innerHTML = '<p class="__github-switcher-preview-empty">No tools enabled</p>';
+  } else {
+    previewArea.appendChild(previewList);
+  }
 }
 
 /**
