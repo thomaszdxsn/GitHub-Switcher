@@ -96,11 +96,15 @@ function toggleMenu(toolStates: Map<string, import('@/lib/types').ToolState>): v
 /**
  * Opens the dropdown menu
  */
-function openMenu(toolStates: Map<string, import('@/lib/types').ToolState>): void {
+async function openMenu(toolStates: Map<string, import('@/lib/types').ToolState>): Promise<void> {
   if (!sidebarButton || !toolDropdown) return;
 
   const buttonElement = sidebarButton.getButtonElement();
   if (!buttonElement) return;
+
+  // Load user preferences for toolOrder
+  const preferences = await loadPreferences();
+  const toolOrder = preferences.toolOrder; // Can be undefined (defaults to [1,2,3,4,5,6,7,8,9])
 
   // Calculate menu position - start from button's vertical center
   const buttonRect = buttonElement.getBoundingClientRect();
@@ -115,8 +119,8 @@ function openMenu(toolStates: Map<string, import('@/lib/types').ToolState>): voi
   // Arrow is 8px wide, so total offset = buttonWidth + gap + arrowWidth
   position.left = buttonRect.right + 2 + 8; // 2px gap + 8px arrow
 
-  // Show dropdown
-  toolDropdown.show(toolStates, position);
+  // Show dropdown with toolOrder
+  toolDropdown.show(toolStates, position, toolOrder);
 
   // Update state
   menuState.isOpen = true;
@@ -225,7 +229,9 @@ async function handleStorageChange(
         // Recompute tool states with new preferences
         const enabledTools = TOOLS.filter((tool) => preferences.enabledTools.includes(tool.order));
         const toolStates = computeAllToolStates(enabledTools, repoContext);
-        toolDropdown.updateTools(toolStates);
+
+        // Update dropdown with new tool states and order
+        toolDropdown.updateTools(toolStates, preferences.toolOrder);
         log('Dropdown menu updated with new tool states');
       } catch (error) {
         warn('Failed to update dropdown menu:', error);

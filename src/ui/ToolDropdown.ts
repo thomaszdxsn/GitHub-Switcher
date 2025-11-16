@@ -3,6 +3,36 @@ import { TOOL_ICONS } from '../lib/icons';
 import type { MenuPosition, ToolState } from '../lib/types';
 
 /**
+ * Sort tool states by toolOrder
+ * @param toolStates - Map of tool name to ToolState
+ * @param toolOrder - Optional tool order array (defaults to [1,2,3,4,5,6,7,8,9])
+ * @returns Sorted array of [toolName, toolState] tuples
+ */
+function sortToolsByOrder(
+  toolStates: Map<string, ToolState>,
+  toolOrder?: number[]
+): [string, ToolState][] {
+  const defaultOrder = TOOLS.map((t) => t.order);
+  const order = toolOrder || defaultOrder;
+
+  // Create array from map entries
+  const entries = Array.from(toolStates.entries());
+
+  // Sort by toolOrder
+  return entries.sort((a, b) => {
+    const toolA = TOOLS.find((t) => t.name === a[0]);
+    const toolB = TOOLS.find((t) => t.name === b[0]);
+
+    if (!toolA || !toolB) return 0;
+
+    const indexA = order.indexOf(toolA.order);
+    const indexB = order.indexOf(toolB.order);
+
+    return indexA - indexB;
+  });
+}
+
+/**
  * ToolDropdown component - renders the dropdown menu with tool links
  * Native DOM implementation (no React)
  */
@@ -11,6 +41,7 @@ export class ToolDropdown {
   private menuContainer: HTMLDivElement | null = null;
   private menu: HTMLUListElement | null = null;
   private onCloseCallback: (() => void) | null = null;
+  private toolOrder?: number[]; // Store tool order for sorting
 
   /**
    * Creates the dropdown menu element
@@ -25,8 +56,11 @@ export class ToolDropdown {
     menu.setAttribute('role', 'menu');
     menu.setAttribute('aria-label', 'Third-party tools');
 
-    // Render all tools (enabled and disabled)
-    Array.from(toolStates.entries()).forEach(([toolName, toolState]) => {
+    // Sort tools by toolOrder
+    const sortedEntries = sortToolsByOrder(toolStates, this.toolOrder);
+
+    // Render all tools (enabled and disabled) in sorted order
+    sortedEntries.forEach(([toolName, toolState]) => {
       // Get tool config from TOOLS array
       const toolConfig = TOOLS.find((t) => t.name === toolName);
       if (!toolConfig) return; // Skip if tool not found
@@ -247,8 +281,16 @@ export class ToolDropdown {
    * Shows the dropdown menu at the specified position
    * @param toolStates - Map of tool name to ToolState (enabled/disabled with URL)
    * @param position - Menu position {top, left}
+   * @param toolOrder - Optional tool order array (defaults to [1,2,3,4,5,6,7,8,9])
    */
-  public show(toolStates: Map<string, ToolState>, position: MenuPosition): void {
+  public show(
+    toolStates: Map<string, ToolState>,
+    position: MenuPosition,
+    toolOrder?: number[]
+  ): void {
+    // Store toolOrder for sorting
+    this.toolOrder = toolOrder;
+
     if (this.menuContainer) {
       // Already showing, just update position
       if (this.menu) {
@@ -308,11 +350,17 @@ export class ToolDropdown {
   /**
    * Updates the tool list in the dropdown menu with new tool states
    * @param toolStates - Map of tool IDs to their states (enabled + URL)
+   * @param toolOrder - Optional tool order array (uses stored order if not provided)
    */
-  public updateTools(toolStates: Map<string, ToolState>): void {
+  public updateTools(toolStates: Map<string, ToolState>, toolOrder?: number[]): void {
     if (!this.menu || !this.menuContainer) {
       // Menu not currently shown, nothing to update
       return;
+    }
+
+    // Update toolOrder if provided
+    if (toolOrder !== undefined) {
+      this.toolOrder = toolOrder;
     }
 
     // Store current position
@@ -324,7 +372,7 @@ export class ToolDropdown {
       this.menu.parentNode.removeChild(this.menu);
     }
 
-    // Create new menu with updated tool states
+    // Create new menu with updated tool states (uses this.toolOrder)
     this.menu = this.createMenu(toolStates);
 
     // Restore position
