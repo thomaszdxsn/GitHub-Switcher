@@ -23,6 +23,7 @@ let warningBanner: HTMLElement | null = null;
 let warningCloseButton: HTMLElement | null = null;
 let resetButton: HTMLElement | null = null;
 let toolListContainer: HTMLElement | null = null;
+let previewArea: HTMLElement | null = null;
 
 /**
  * Creates the main HTML structure
@@ -39,14 +40,12 @@ function createHTML(): void {
       <div class="__github-switcher-warning-banner-content">
         <span class="__github-switcher-warning-banner-icon">⚠️</span>
         <p class="__github-switcher-warning-banner-message">
-          检测到数据损坏，已自动恢复到默认设置。
-          <br />
           Data corruption detected. Settings have been automatically restored to defaults.
         </p>
         <button
           id="__github-switcher-warning-close"
           class="__github-switcher-warning-banner-close"
-          aria-label="关闭警告"
+          aria-label="Close warning"
         >
           ✕
         </button>
@@ -57,17 +56,15 @@ function createHTML(): void {
     <div class="__github-switcher-options-container">
       <!-- Header -->
       <header class="__github-switcher-options-header">
-        <h1>GitHub Switcher - 工具管理</h1>
+        <h1>GitHub Switcher - Tool Management</h1>
         <p class="__github-switcher-options-subtitle">
-          拖拽调整工具顺序，点击开关启用/禁用工具
-          <br />
           Drag to reorder tools, toggle switches to enable/disable
         </p>
       </header>
 
       <!-- Tool List Section -->
       <section class="__github-switcher-options-section">
-        <h2 class="__github-switcher-options-section-title">工具列表 / Tool List</h2>
+        <h2 class="__github-switcher-options-section-title">Tool List</h2>
         <div
           id="__github-switcher-tool-list"
           class="__github-switcher-tool-list"
@@ -79,10 +76,11 @@ function createHTML(): void {
 
       <!-- Preview Section -->
       <section class="__github-switcher-options-section">
-        <h2 class="__github-switcher-options-section-title">预览 / Preview</h2>
+        <h2 class="__github-switcher-options-section-title">Preview</h2>
         <div
+          id="__github-switcher-preview-area"
           class="__github-switcher-preview-area"
-          aria-label="工具菜单预览"
+          aria-label="Tool menu preview"
         >
           <!-- Preview content will be dynamically generated -->
         </div>
@@ -93,9 +91,9 @@ function createHTML(): void {
         <button
           id="__github-switcher-reset-button"
           class="__github-switcher-reset-button"
-          aria-label="重置为默认配置 / Reset to defaults"
+          aria-label="Reset to defaults"
         >
-          重置为默认 / Reset to Defaults
+          Reset to Defaults
         </button>
       </footer>
     </div>
@@ -117,9 +115,13 @@ async function initialize(): Promise<void> {
     warningCloseButton = document.getElementById('__github-switcher-warning-close');
     resetButton = document.getElementById('__github-switcher-reset-button');
     toolListContainer = document.getElementById('__github-switcher-tool-list');
+    previewArea = document.getElementById('__github-switcher-preview-area');
 
     if (!toolListContainer) {
       throw new Error('Tool list container not found');
+    }
+    if (!previewArea) {
+      throw new Error('Preview area not found');
     }
 
     // Load user preferences
@@ -137,6 +139,9 @@ async function initialize(): Promise<void> {
 
     // Set up event handlers
     setupEventHandlers();
+
+    // Update preview
+    updatePreview();
 
     logger.log('[Options] Initialization complete', {
       toolCount: currentPreferences.toolOrder?.length || 9,
@@ -193,6 +198,9 @@ async function handleDragEnd(newOrder: number[]): Promise<void> {
     const result = await loadToolConfigurationForOptions();
     currentPreferences = result.config;
 
+    // Update preview
+    updatePreview();
+
     logger.log('[Options] Tool order saved successfully');
   } catch (error) {
     logger.error('[Options] Failed to save tool order:', error);
@@ -233,6 +241,9 @@ async function handleToolToggle(toolId: number, enabled: boolean): Promise<void>
       toolListComponent.update(currentPreferences);
     }
 
+    // Update preview
+    updatePreview();
+
     logger.log('[Options] Tool toggled successfully', {
       toolId,
       enabled,
@@ -259,7 +270,7 @@ async function handleToolToggle(toolId: number, enabled: boolean): Promise<void>
 async function handleReset(): Promise<void> {
   // Confirm action
   const confirmed = window.confirm(
-    '确定要重置所有设置到默认值吗？此操作无法撤销。\n\nAre you sure you want to reset all settings to defaults? This action cannot be undone.'
+    'Are you sure you want to reset all settings to defaults? This action cannot be undone.'
   );
 
   if (!confirmed) {
@@ -281,8 +292,11 @@ async function handleReset(): Promise<void> {
       toolListComponent.update(currentPreferences);
     }
 
+    // Update preview
+    updatePreview();
+
     logger.log('[Options] Reset complete');
-    showSuccess('设置已重置到默认值 / Settings have been reset to defaults');
+    showSuccess('Settings have been reset to defaults');
   } catch (error) {
     logger.error('[Options] Reset failed:', error);
     showError('Failed to reset settings. Please try again.');
@@ -305,6 +319,48 @@ function showSuccess(message: string): void {
   // TODO: Implement toast notification in Phase 2
   // For now, use alert
   window.alert(`✅ ${message}`);
+}
+
+/**
+ * Updates the preview area with current tool configuration
+ */
+function updatePreview(): void {
+  if (!previewArea || !currentPreferences) {
+    return;
+  }
+
+  // Import TOOLS config
+  import('./lib/config').then(({ TOOLS }) => {
+    const toolOrder = currentPreferences?.toolOrder || [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    const enabledTools = currentPreferences?.enabledTools || [];
+
+    // Clear preview
+    previewArea!.innerHTML = '';
+
+    // Create preview list
+    const previewList = document.createElement('ul');
+    previewList.className = '__github-switcher-preview-list';
+
+    let index = 1;
+    for (const toolId of toolOrder) {
+      if (!enabledTools.includes(toolId)) continue;
+
+      const tool = TOOLS.find((t) => t.order === toolId);
+      if (!tool) continue;
+
+      const listItem = document.createElement('li');
+      listItem.className = '__github-switcher-preview-item';
+      listItem.textContent = `${index}. ${tool.name}`;
+      previewList.appendChild(listItem);
+      index++;
+    }
+
+    if (index === 1) {
+      previewArea!.innerHTML = '<p class="__github-switcher-preview-empty">No tools enabled</p>';
+    } else {
+      previewArea!.appendChild(previewList);
+    }
+  });
 }
 
 /**

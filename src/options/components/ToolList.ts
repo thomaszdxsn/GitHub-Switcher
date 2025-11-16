@@ -127,7 +127,7 @@ export class ToolList {
     const dragHandle = document.createElement('div');
     dragHandle.className = '__github-switcher-tool-drag-handle';
     dragHandle.innerHTML = '⋮⋮';
-    dragHandle.setAttribute('aria-label', '拖拽以调整顺序');
+    dragHandle.setAttribute('aria-label', 'Drag to reorder');
     item.appendChild(dragHandle);
 
     // Tool icon
@@ -145,7 +145,7 @@ export class ToolList {
     const nameElement = document.createElement('h3');
     nameElement.className = '__github-switcher-tool-name';
     nameElement.textContent = tool.name;
-    item.appendChild(infoContainer);
+    infoContainer.appendChild(nameElement);
 
     // Tool description
     const description = getToolDescription(tool.order);
@@ -163,12 +163,12 @@ export class ToolList {
     const toggleInput = document.createElement('input');
     toggleInput.type = 'checkbox';
     toggleInput.checked = preferences.enabledTools.includes(tool.order);
-    toggleInput.setAttribute('aria-label', `启用/禁用 ${tool.name}`);
+    toggleInput.setAttribute('aria-label', `Enable/disable ${tool.name}`);
 
     // Disable toggle if it's the last enabled tool
     if (preferences.enabledTools.length === 1 && preferences.enabledTools.includes(tool.order)) {
       toggleInput.disabled = true;
-      toggleInput.title = '至少需要保留一个工具启用';
+      toggleInput.title = 'At least one tool must remain enabled';
     }
 
     toggleInput.addEventListener('change', (e) => {
