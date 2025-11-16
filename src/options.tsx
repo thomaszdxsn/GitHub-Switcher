@@ -93,6 +93,7 @@ function createHTML(): void {
         <button
           id="__github-switcher-reset-button"
           class="__github-switcher-reset-button"
+          aria-label="重置为默认配置 / Reset to defaults"
         >
           重置为默认 / Reset to Defaults
         </button>
