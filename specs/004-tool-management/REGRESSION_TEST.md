@@ -19,6 +19,22 @@ This document contains regression test cases to prevent the 5 bugs discovered du
 **Fix Commit**: 509dc04 - Changed to static import at file top  
 **Prevention**: Always use static imports in Chrome extensions, avoid dynamic `import()` syntax
 
+### Bug #7: Tool Icons Not Displaying (CRITICAL - FIXED)
+
+**Issue**: All tool icons show broken image placeholders in Options page  
+**Root Cause**: Used `chrome.runtime.getURL('assets/...')` but Plasmo doesn't copy assets directory to build  
+**Impact**: Poor user experience, hard to identify tools  
+**Fix Commit**: 5df8efa - Use base64-encoded icons via `TOOL_ICONS` (same as ToolDropdown)  
+**Prevention**: Use `data-base64:~assets/...` imports for all images in Options page components
+
+### Bug #8: Preview Not Updating After Drag & Drop (MEDIUM - FIXED)
+
+**Issue**: After dragging tools to reorder, preview section shows old order until page refresh  
+**Root Cause**: `updatePreview()` called before `currentPreferences` state fully updated (async timing issue)  
+**Impact**: User confusion, looks like save failed  
+**Fix Commit**: 5df8efa - Wrap `updatePreview()` in `setTimeout(..., 0)` to defer until next tick  
+**Prevention**: Always defer UI updates after async state changes using setTimeout or requestAnimationFrame
+
 ---
 
 ## Test Environment Setup
