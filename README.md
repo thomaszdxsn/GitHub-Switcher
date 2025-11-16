@@ -49,6 +49,34 @@ The extension intelligently enables or disables tools based on the current GitHu
 - ✅ **Enabled tools**: Full opacity, clickable, opens target tool in new tab
 - 🚫 **Disabled tools**: 50% opacity, `cursor: not-allowed`, click blocked
 
+### Tool Management & Customization
+
+**Personalize Your Workflow** - Access the settings page to customize which tools appear in your sidebar menu:
+
+- **Enable/Disable Tools**: Toggle individual tools on/off to show only what you need
+  - At least 1 tool must remain enabled (safety constraint)
+  - Changes sync instantly across all open GitHub tabs
+
+- **Reorder Tools**: Drag and drop tools to rearrange the menu order
+  - Visual feedback with smooth animations (150ms)
+  - New order persists across browser sessions
+
+- **Reset to Defaults**: One-click restoration of original settings
+  - Confirmation dialog prevents accidental resets
+  - Restores all 9 tools to default order
+
+**Accessing Settings:**
+1. Right-click the extension icon in the Chrome toolbar
+2. Select "Options" from the context menu
+3. Or navigate to `chrome://extensions/` → Find "GitHub-Switcher" → Click "Options"
+
+**Settings Sync** (via `chrome.storage.sync`):
+- Preferences automatically sync across all Chrome instances signed in to the same Google account
+- Changes propagate within 5-10 seconds (Chrome's sync delay)
+- Works across Windows, macOS, Linux, and ChromeOS
+
+**Note**: The sidebar menu updates in real-time when you modify settings in the options page.
+
 ### Permissions Explained
 
 This extension requires the following permissions:
