@@ -331,11 +331,13 @@ function updatePreview(): void {
 
   // Import TOOLS config
   import('./lib/config').then(({ TOOLS }) => {
-    const toolOrder = currentPreferences?.toolOrder || [1, 2, 3, 4, 5, 6, 7, 8, 9];
-    const enabledTools = currentPreferences?.enabledTools || [];
+    if (!previewArea || !currentPreferences) return;
+
+    const toolOrder = currentPreferences.toolOrder || [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    const enabledTools = currentPreferences.enabledTools || [];
 
     // Clear preview
-    previewArea!.innerHTML = '';
+    previewArea.innerHTML = '';
 
     // Create preview list
     const previewList = document.createElement('ul');
@@ -356,9 +358,9 @@ function updatePreview(): void {
     }
 
     if (index === 1) {
-      previewArea!.innerHTML = '<p class="__github-switcher-preview-empty">No tools enabled</p>';
+      previewArea.innerHTML = '<p class="__github-switcher-preview-empty">No tools enabled</p>';
     } else {
-      previewArea!.appendChild(previewList);
+      previewArea.appendChild(previewList);
     }
   });
 }
