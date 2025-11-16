@@ -15,6 +15,9 @@ import { ToolList } from './options/components/ToolList';
 import * as logger from './utils/logger';
 import './options/styles/options.css';
 
+// Set page title
+document.title = 'Settings - GitHub Switcher';
+
 // Global state
 let toolListComponent: ToolList | null = null;
 let currentPreferences: UserPreferences | null = null;

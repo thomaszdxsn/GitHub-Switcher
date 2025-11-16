@@ -33,7 +33,7 @@
 
 /* === Warning Banner === */
 .__github-switcher-warning-banner {
-  display: flex;
+  display: none; /* Hidden by default */
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
@@ -41,6 +41,10 @@
   background-color: #fff8c5;
   border: 1px solid #d4a72c;
   border-radius: 6px;
+}
+
+.__github-switcher-warning-banner--visible {
+  display: flex; /* Show when visible class is added */
 }
 
 .__github-switcher-warning-icon {

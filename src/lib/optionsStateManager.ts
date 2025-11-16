@@ -60,13 +60,11 @@ export async function loadToolConfigurationForOptions(): Promise<{
   const validatedConfig = validateToolConfiguration(rawConfig);
 
   // Check if validation changed anything (data corruption detected)
-  const hasWarning =
-    JSON.stringify(rawConfig) !== JSON.stringify(validatedConfig) ||
-    validatedConfig.enabledTools.length === DEFAULT_PREFERENCES.enabledTools.length;
+  const hasWarning = JSON.stringify(rawConfig) !== JSON.stringify(validatedConfig);
 
   return {
     config: validatedConfig,
-    hasWarning: hasWarning && rawConfig.enabledTools.length > 0,
+    hasWarning,
   };
 }
 

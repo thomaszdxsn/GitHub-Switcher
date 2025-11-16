@@ -23,8 +23,16 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
  */
 export async function loadPreferences(): Promise<UserPreferences> {
   try {
-    const result = await chrome.storage.sync.get(DEFAULT_PREFERENCES);
-    return result as UserPreferences;
+    // Get all keys from storage, then merge with defaults
+    const result = await chrome.storage.sync.get(null);
+
+    // Merge with defaults (storage values override defaults)
+    const preferences: UserPreferences = {
+      ...DEFAULT_PREFERENCES,
+      ...result,
+    };
+
+    return preferences;
   } catch (_error) {
     return DEFAULT_PREFERENCES;
   }
