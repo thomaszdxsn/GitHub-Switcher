@@ -6,7 +6,6 @@
 import {
   loadToolConfigurationForOptions,
   resetToDefault,
-  saveToolOrder,
   toggleToolEnabled,
 } from './lib/optionsStateManager';
 import type { UserPreferences } from './lib/types';
@@ -169,42 +168,6 @@ function setupEventHandlers(): void {
   // Tool toggle handler
   if (toolListComponent) {
     toolListComponent.onToggle(handleToolToggle);
-    toolListComponent.onDragEnd(handleDragEnd);
-  }
-}
-
-/**
- * Handles drag end events (tool reordering)
- */
-async function handleDragEnd(newOrder: number[]): Promise<void> {
-  if (!currentPreferences) {
-    logger.error('[Options] No preferences loaded');
-    return;
-  }
-
-  try {
-    logger.log('[Options] Saving new tool order:', newOrder);
-
-    // Save new order
-    await saveToolOrder(newOrder);
-
-    // Reload preferences
-    const result = await loadToolConfigurationForOptions();
-    currentPreferences = result.config;
-
-    logger.log('[Options] Tool order saved successfully');
-  } catch (error) {
-    logger.error('[Options] Failed to save tool order:', error);
-    const errorMessage =
-      error instanceof Error ? error.message : 'Failed to save tool order. Please try again.';
-    showError(errorMessage);
-
-    // Reload and revert UI
-    const result = await loadToolConfigurationForOptions();
-    currentPreferences = result.config;
-    if (toolListComponent) {
-      toolListComponent.update(currentPreferences);
-    }
   }
 }
 
@@ -315,12 +278,3 @@ document.addEventListener('DOMContentLoaded', () => {
     showError('Failed to initialize options page. Please reload the extension.');
   });
 });
-
-/**
- * Default export required by Plasmo to detect this as an options page
- * This function is never called - Plasmo just needs the default export
- * Actual rendering happens via DOM manipulation in initialize()
- */
-export default function OptionsPage() {
-  return null;
-}

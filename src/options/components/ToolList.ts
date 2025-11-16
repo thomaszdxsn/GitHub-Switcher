@@ -1,3 +1,4 @@
+import Sortable from 'sortablejs';
 import { getToolDescription, TOOLS, type ToolEntry } from '../../lib/config';
 import { getToolOrder } from '../../lib/optionsStateManager';
 import type { UserPreferences } from '../../lib/types';
@@ -10,6 +11,8 @@ export class ToolList {
   private container: HTMLElement | null = null;
   private currentPreferences: UserPreferences | null = null;
   private onToggleCallback: ((toolId: number, enabled: boolean) => void) | null = null;
+  private onDragEndCallback: ((newOrder: number[]) => void) | null = null;
+  private sortableInstance: Sortable | null = null;
 
   /**
    * Mounts the component to the DOM
@@ -20,6 +23,7 @@ export class ToolList {
     this.container = containerElement;
     this.currentPreferences = preferences;
     this.render();
+    this.initializeSortable();
   }
 
   /**
@@ -29,6 +33,7 @@ export class ToolList {
   public update(preferences: UserPreferences): void {
     this.currentPreferences = preferences;
     this.render();
+    this.initializeSortable(); // Re-initialize after re-render
   }
 
   /**
@@ -37,6 +42,14 @@ export class ToolList {
    */
   public onToggle(callback: (toolId: number, enabled: boolean) => void): void {
     this.onToggleCallback = callback;
+  }
+
+  /**
+   * Sets the callback for drag end events
+   * @param callback - Function to call when drag order changes
+   */
+  public onDragEnd(callback: (newOrder: number[]) => void): void {
+    this.onDragEndCallback = callback;
   }
 
   /**
@@ -61,6 +74,45 @@ export class ToolList {
       const toolItem = this.createToolItem(tool, this.currentPreferences);
       this.container.appendChild(toolItem);
     }
+  }
+
+  /**
+   * Initializes SortableJS for drag & drop functionality
+   */
+  private initializeSortable(): void {
+    if (!this.container) return;
+
+    // Destroy previous instance if exists
+    if (this.sortableInstance) {
+      this.sortableInstance.destroy();
+      this.sortableInstance = null;
+    }
+
+    // Create new Sortable instance
+    this.sortableInstance = new Sortable(this.container, {
+      handle: '.__github-switcher-tool-drag-handle',
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
+      dragClass: 'sortable-drag',
+      onEnd: (_evt) => {
+        // Extract new order from DOM
+        const newOrder: number[] = [];
+        const items = this.container?.querySelectorAll('.__github-switcher-tool-item');
+
+        items?.forEach((item) => {
+          const toolId = Number.parseInt((item as HTMLElement).dataset.toolId || '0', 10);
+          if (toolId > 0) {
+            newOrder.push(toolId);
+          }
+        });
+
+        // Call callback if provided
+        if (this.onDragEndCallback && newOrder.length === 9) {
+          this.onDragEndCallback(newOrder);
+        }
+      },
+    });
   }
 
   /**
@@ -140,11 +192,18 @@ export class ToolList {
    * Unmounts the component
    */
   public unmount(): void {
+    // Destroy Sortable instance
+    if (this.sortableInstance) {
+      this.sortableInstance.destroy();
+      this.sortableInstance = null;
+    }
+
     if (this.container) {
       this.container.innerHTML = '';
     }
     this.container = null;
     this.currentPreferences = null;
     this.onToggleCallback = null;
+    this.onDragEndCallback = null;
   }
 }
