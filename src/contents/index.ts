@@ -5,10 +5,10 @@
 
 import type { PlasmoContentScript } from 'plasmo';
 import { COMMIT_HASH, TOOLS } from '@/lib/config';
-import { parseGitHubUrl } from '@/lib/detectGithub';
+import { parseGitHubFileUrl, parseGitHubUrl } from '@/lib/detectGithub';
 import { loadPreferences } from '@/lib/storage';
-import type { GeneratedToolLink, MenuState } from '@/lib/types';
-import { generateToolUrl } from '@/lib/urlGenerator';
+import { computeAllToolStates } from '@/lib/toolStateManager';
+import type { MenuState } from '@/lib/types';
 import { SidebarButton } from '@/ui/SidebarButton';
 import { ToolDropdown } from '@/ui/ToolDropdown';
 import { log, warn } from '@/utils/logger';
@@ -33,24 +33,38 @@ const menuState: MenuState = {
  * Initializes the sidebar button and dropdown
  */
 async function initialize(): Promise<void> {
-  // Parse current URL
-  const repoContext = parseGitHubUrl();
-  if (!repoContext) {
-    log('Not on a repository page, skipping initialization');
-    return;
-  }
+  // Parse current URL - try file URL first
+  const fileContext = parseGitHubFileUrl();
 
-  log(`Repository detected: ${repoContext.owner}/${repoContext.repo}`);
+  // If not a file page, check if it's a repo page
+  if (!fileContext) {
+    const repoContext = parseGitHubUrl();
+    if (!repoContext) {
+      log('Not on a repository page, skipping initialization');
+      return;
+    }
+    log(`Repository detected: ${repoContext.owner}/${repoContext.repo}`);
+  } else {
+    log(
+      `File detected: ${fileContext.owner}/${fileContext.repo}/blob/${fileContext.ref}/${fileContext.filePath}`
+    );
+  }
 
   // Load user preferences
   const preferences = await loadPreferences();
 
-  // Generate tool links
-  const toolLinks: GeneratedToolLink[] = TOOLS.map((tool) => ({
-    tool,
-    url: generateToolUrl(tool, repoContext),
-    enabled: preferences.enabledTools.includes(tool.order),
-  }));
+  // T038: Compute tool states using toolStateManager
+  // Pass fileContext (which is FileContext | null - null means repo page)
+  const allToolStates = computeAllToolStates(TOOLS, fileContext);
+
+  // Filter by user preferences (only include enabled tools)
+  const toolStates = new Map(
+    Array.from(allToolStates.entries()).filter(([_, state]) => {
+      // Find tool by name to check user preferences
+      const tool = TOOLS.find((t) => t.name === state.toolName);
+      return tool && preferences.enabledTools.includes(tool.order);
+    })
+  );
 
   // Create sidebar button
   sidebarButton = new SidebarButton();
@@ -61,7 +75,7 @@ async function initialize(): Promise<void> {
 
   // Set up button click handler
   sidebarButton.onToggle(() => {
-    toggleMenu(toolLinks);
+    toggleMenu(toolStates);
   });
 
   // Set up dropdown close handler
@@ -75,18 +89,18 @@ async function initialize(): Promise<void> {
 /**
  * Toggles the dropdown menu open/closed
  */
-function toggleMenu(toolLinks: GeneratedToolLink[]): void {
+function toggleMenu(toolStates: Map<string, import('@/lib/types').ToolState>): void {
   if (menuState.isOpen) {
     closeMenu();
   } else {
-    openMenu(toolLinks);
+    openMenu(toolStates);
   }
 }
 
 /**
  * Opens the dropdown menu
  */
-function openMenu(toolLinks: GeneratedToolLink[]): void {
+function openMenu(toolStates: Map<string, import('@/lib/types').ToolState>): void {
   if (!sidebarButton || !toolDropdown) return;
 
   const buttonElement = sidebarButton.getButtonElement();
@@ -106,7 +120,7 @@ function openMenu(toolLinks: GeneratedToolLink[]): void {
   position.left = buttonRect.right + 2 + 8; // 2px gap + 8px arrow
 
   // Show dropdown
-  toolDropdown.show(toolLinks, position);
+  toolDropdown.show(toolStates, position);
 
   // Update state
   menuState.isOpen = true;
@@ -162,7 +176,9 @@ function handleWindowResize(): void {
 async function handleNavigation(): Promise<void> {
   log('Navigation detected, checking URL...');
 
-  const repoContext = parseGitHubUrl();
+  // Try file URL first, fallback to repo URL
+  const fileContext = parseGitHubFileUrl();
+  const repoContext = fileContext || parseGitHubUrl();
 
   // If we moved away from a repository page, cleanup
   if (!repoContext) {

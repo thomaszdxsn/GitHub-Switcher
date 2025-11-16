@@ -8,15 +8,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Smart Tool Enabling (Context-Aware Menu)**: Tools automatically enable/disable based on page type
+  - File-aware tools (githistory, nbviewer) only enabled on file pages (`blob/` URLs)
+  - Extension-specific filtering: nbviewer only enabled for `.ipynb` files
+  - Visual feedback: disabled tools shown with 50% opacity and cursor:not-allowed
+  - Click interception: disabled tools cannot be accidentally activated
+  - Preserves URL query parameters and hashes in generated tool links
+- **File URL Parsing**: New `parseGitHubFileUrl()` function extracts file context
+  - Parses owner, repo, ref (branch/tag), file path, extension from GitHub blob URLs
+  - Supports special characters (spaces, Chinese characters, etc.) with proper encoding
+  - Returns `null` for non-file pages (repository home, directories, PRs, issues)
+- **Tool State Management**: New `toolStateManager` module for conditional tool availability
+  - LRU cache (max 100 entries) to optimize repeated state computations
+  - Declarative `enableCondition` configuration per tool
+  - `computeToolState()` and `computeAllToolStates()` functions for state calculation
+- **Enhanced URL Generation**: Extended `generateToolUrl()` to support file-specific placeholders
+  - New placeholders: `{ref}` (branch/tag), `{filepath}` (file path)
+  - Backward compatible with existing repository-only tools
+  - Query and hash preservation for file URLs
 - **CodeWiki Integration**: New third-party tool for AI-enhanced code and documentation browsing
   - Accessible at `https://codewiki.google/{owner}/{repo}`
   - Positioned below DeepWiki in the tool menu (3rd position)
   - Includes dedicated unit tests for URL generation and special character handling
 
 ### Changed
+- Tool configurations updated with `enableCondition` field:
+  - **githistory**: `requiresFilePath: true, fileExtensions: []` (all files)
+  - **nbviewer**: `requiresFilePath: true, fileExtensions: ['ipynb']` (notebook files only)
+- URL templates updated for file-aware tools:
+  - **githistory**: Now includes `/blob/{ref}/{filepath}` for file-specific history
+  - **nbviewer**: Now includes `/blob/{ref}/{filepath}` for direct notebook rendering
+- UI updated to render enabled/disabled states with opacity and ARIA attributes
+- Content script now uses file context detection for intelligent tool state computation
 - Tool count increased from 8 to 9
 - Updated tool order: CodeSandbox through githistory now numbered 4-9 (previously 3-8)
-- Updated all documentation (README, spec, STORE_LISTING) to reflect 9 tools
+- Test coverage increased to 95.87% (84 tests passing)
 
 ## [1.0.0] - 2025-11-13
 

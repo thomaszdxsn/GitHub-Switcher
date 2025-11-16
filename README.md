@@ -20,10 +20,34 @@ When viewing any GitHub repository, a sidebar button appears on the left side of
 
 **Key Features:**
 - ✅ Works on all GitHub repository pages (including sub-paths like files, PRs, issues)
+- ✅ **Smart Tool Enabling** - Tools automatically enable/disable based on page context
 - ✅ Smart menu positioning - adapts to viewport constraints
 - ✅ Easy dismissal - click outside menu or re-click button to close
 - ✅ Keyboard accessible with ARIA attributes
 - ✅ Handles GitHub SPA navigation - updates automatically when navigating between repositories
+
+### Smart Tool Enabling (Context-Aware Menu)
+
+The extension intelligently enables or disables tools based on the current GitHub page type:
+
+**File-Aware Tools:**
+- **githistory** - Only enabled on file pages (e.g., `github.com/owner/repo/blob/main/README.md`)
+  - Disabled on repository home pages and directory listings
+  - Provides visual file history for individual files
+
+- **nbviewer** - Only enabled on Jupyter Notebook files (`.ipynb`)
+  - Disabled on non-notebook files and repository pages
+  - Offers better rendering for notebook files
+
+**How It Works:**
+- Tools requiring file context (githistory, nbviewer) appear **grayed out** when disabled
+- Click events are intercepted - disabled tools cannot be accidentally clicked
+- As you navigate between repository pages and files, tools automatically enable/disable
+- Extension preserves URL query parameters and hashes when generating tool links
+
+**Visual Indicators:**
+- ✅ **Enabled tools**: Full opacity, clickable, opens target tool in new tab
+- 🚫 **Disabled tools**: 50% opacity, `cursor: not-allowed`, click blocked
 
 ### Permissions Explained
 

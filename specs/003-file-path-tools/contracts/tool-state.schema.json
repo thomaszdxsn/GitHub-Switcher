@@ -1,0 +1,316 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/thomaszdxsn/GitHub-Switcher/schemas/tool-state.json",
+  "title": "工具状态接口契约",
+  "version": "1.0.0",
+  "definitions": {
+    "FileContext": {
+      "type": "object",
+      "description": "GitHub 文件页面的上下文信息",
+      "required": ["owner", "repo", "ref", "filePath", "extension", "currentUrl"],
+      "properties": {
+        "owner": {
+          "type": "string",
+          "description": "仓库所有者（用户名或组织名）",
+          "minLength": 1,
+          "maxLength": 39,
+          "pattern": "^[a-zA-Z0-9-]+$",
+          "examples": ["microsoft", "facebook", "google"]
+        },
+        "repo": {
+          "type": "string",
+          "description": "仓库名称",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[a-zA-Z0-9._-]+$",
+          "examples": ["vscode", "react", "tensorflow"]
+        },
+        "ref": {
+          "type": "string",
+          "description": "Git 引用（分支名、标签名或 commit hash）",
+          "minLength": 1,
+          "examples": ["main", "master", "v1.0.0", "a1b2c3d4"]
+        },
+        "filePath": {
+          "type": "string",
+          "description": "文件路径（相对于仓库根目录，保留 URL 编码）",
+          "minLength": 1,
+          "examples": ["README.md", "src/index.ts", "my%20file.md"]
+        },
+        "extension": {
+          "type": "string",
+          "description": "文件扩展名（小写，不含点号）",
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+$",
+          "examples": ["md", "ts", "ipynb", "py"]
+        },
+        "query": {
+          "type": ["string", "null"],
+          "description": "URL 查询字符串（含 ?）",
+          "pattern": "^\\?.*$",
+          "examples": ["?plain=1", "?ref=feature-branch", null]
+        },
+        "hash": {
+          "type": ["string", "null"],
+          "description": "URL 哈希片段（含 #）",
+          "pattern": "^#.*$",
+          "examples": ["#L20", "#L10-L30", null]
+        },
+        "currentUrl": {
+          "type": "string",
+          "description": "完整 GitHub URL",
+          "format": "uri",
+          "pattern": "^https?://github\\.com/",
+          "examples": ["https://github.com/microsoft/vscode/blob/main/README.md"]
+        }
+      },
+      "examples": [
+        {
+          "owner": "microsoft",
+          "repo": "vscode",
+          "ref": "main",
+          "filePath": "README.md",
+          "extension": "md",
+          "query": null,
+          "hash": null,
+          "currentUrl": "https://github.com/microsoft/vscode/blob/main/README.md"
+        },
+        {
+          "owner": "jupyter",
+          "repo": "notebook",
+          "ref": "main",
+          "filePath": "docs/example.ipynb",
+          "extension": "ipynb",
+          "query": null,
+          "hash": "#cell-5",
+          "currentUrl": "https://github.com/jupyter/notebook/blob/main/docs/example.ipynb#cell-5"
+        }
+      ]
+    },
+    "ToolEnableCondition": {
+      "type": "object",
+      "description": "工具的启用条件配置",
+      "properties": {
+        "requiresFilePath": {
+          "type": "boolean",
+          "description": "是否需要文件路径（区分文件页面 vs 仓库主页）",
+          "default": false,
+          "examples": [true, false]
+        },
+        "fileExtensions": {
+          "type": "array",
+          "description": "支持的文件扩展名列表（小写，不含点号）；空数组表示支持所有扩展名",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+$",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "default": [],
+          "examples": [
+            ["ipynb"],
+            ["md", "txt", "rst"],
+            []
+          ]
+        }
+      },
+      "examples": [
+        {
+          "requiresFilePath": true,
+          "fileExtensions": []
+        },
+        {
+          "requiresFilePath": true,
+          "fileExtensions": ["ipynb"]
+        },
+        {}
+      ]
+    },
+    "ToolEntry": {
+      "type": "object",
+      "description": "工具配置信息",
+      "required": ["name", "urlTemplate", "order", "iconPath"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "工具名称（唯一标识）",
+          "minLength": 1,
+          "examples": ["githistory", "nbviewer", "GitHub.dev"]
+        },
+        "urlTemplate": {
+          "type": "string",
+          "description": "URL 模板（支持占位符: {owner}, {repo}, {ref}, {filepath}）",
+          "minLength": 1,
+          "pattern": "^https?://",
+          "examples": [
+            "https://github.githistory.xyz/{owner}/{repo}/blob/{ref}/{filepath}",
+            "https://nbviewer.org/github/{owner}/{repo}/blob/{ref}/{filepath}",
+            "https://github.dev/{owner}/{repo}"
+          ]
+        },
+        "order": {
+          "type": "integer",
+          "description": "菜单中的显示顺序",
+          "minimum": 1,
+          "maximum": 100,
+          "examples": [1, 6, 9]
+        },
+        "iconPath": {
+          "type": "string",
+          "description": "工具图标路径（相对于 assets/）",
+          "minLength": 1,
+          "pattern": "^logo/.*\\.(png|svg|jpg)$",
+          "examples": ["logo/githistory-16x16.png", "logo/nbviewer.org-16x16.png"]
+        },
+        "note": {
+          "type": "string",
+          "description": "可选的使用说明",
+          "examples": ["optimal for .ipynb files", "optimal for file/folder paths"]
+        },
+        "enableCondition": {
+          "$ref": "#/definitions/ToolEnableCondition",
+          "description": "启用条件（可选）"
+        }
+      },
+      "examples": [
+        {
+          "name": "githistory",
+          "urlTemplate": "https://github.githistory.xyz/{owner}/{repo}/blob/{ref}/{filepath}",
+          "order": 9,
+          "iconPath": "logo/githistory-16x16.png",
+          "note": "optimal for file/folder paths",
+          "enableCondition": {
+            "requiresFilePath": true,
+            "fileExtensions": []
+          }
+        },
+        {
+          "name": "nbviewer",
+          "urlTemplate": "https://nbviewer.org/github/{owner}/{repo}/blob/{ref}/{filepath}",
+          "order": 6,
+          "iconPath": "logo/nbviewer.org-16x16.png",
+          "note": "optimal for .ipynb files",
+          "enableCondition": {
+            "requiresFilePath": true,
+            "fileExtensions": ["ipynb"]
+          }
+        }
+      ]
+    },
+    "ToolState": {
+      "type": "object",
+      "description": "工具的运行时状态",
+      "required": ["toolName", "enabled", "url", "disabledReason"],
+      "properties": {
+        "toolName": {
+          "type": "string",
+          "description": "工具名称（对应 ToolEntry.name）",
+          "minLength": 1,
+          "examples": ["githistory", "nbviewer"]
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "是否启用",
+          "examples": [true, false]
+        },
+        "url": {
+          "type": ["string", "null"],
+          "description": "生成的目标 URL（仅在 enabled=true 时有值）",
+          "format": "uri",
+          "examples": [
+            "https://github.githistory.xyz/owner/repo/blob/main/file.md",
+            null
+          ]
+        },
+        "disabledReason": {
+          "type": ["string", "null"],
+          "description": "禁用原因（仅在 enabled=false 时有值）",
+          "examples": [
+            "仅适用于文件页面",
+            "仅适用于 .ipynb 文件",
+            null
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "url": {
+                "type": "string",
+                "minLength": 1
+              },
+              "disabledReason": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "enabled": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "url": {
+                "type": "null"
+              },
+              "disabledReason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ],
+      "examples": [
+        {
+          "toolName": "githistory",
+          "enabled": true,
+          "url": "https://github.githistory.xyz/microsoft/vscode/blob/main/README.md",
+          "disabledReason": null
+        },
+        {
+          "toolName": "nbviewer",
+          "enabled": false,
+          "url": null,
+          "disabledReason": "仅适用于 .ipynb 文件"
+        }
+      ]
+    },
+    "ToolStateMap": {
+      "type": "object",
+      "description": "所有工具的状态映射（toolName -> ToolState）",
+      "additionalProperties": {
+        "$ref": "#/definitions/ToolState"
+      },
+      "examples": [
+        {
+          "githistory": {
+            "toolName": "githistory",
+            "enabled": true,
+            "url": "https://github.githistory.xyz/owner/repo/blob/main/file.md",
+            "disabledReason": null
+          },
+          "nbviewer": {
+            "toolName": "nbviewer",
+            "enabled": false,
+            "url": null,
+            "disabledReason": "仅适用于 .ipynb 文件"
+          }
+        }
+      ]
+    }
+  }
+}

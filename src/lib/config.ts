@@ -32,6 +32,9 @@ export interface ToolEntry {
 
   /** Optional usage note (e.g., "optimal for .ipynb files") */
   note?: string;
+
+  /** 启用条件：定义工具在何种页面类型下可用 Enable condition: defines when tool is available */
+  enableCondition?: import('./types').ToolEnableCondition;
 }
 
 /**
@@ -71,10 +74,14 @@ export const TOOLS: readonly ToolEntry[] = [
   },
   {
     name: 'nbviewer',
-    urlTemplate: 'https://nbviewer.org/github/{owner}/{repo}',
+    urlTemplate: 'https://nbviewer.org/github/{owner}/{repo}/blob/{ref}/{filepath}',
     order: 6,
     iconPath: 'logo/nbviewer.org-16x16.png',
     note: 'optimal for .ipynb files',
+    enableCondition: {
+      requiresFilePath: true,
+      fileExtensions: ['ipynb'], // 仅支持 Jupyter Notebook 文件 Only .ipynb files
+    },
   },
   {
     name: 'gitdiagram',
@@ -90,9 +97,13 @@ export const TOOLS: readonly ToolEntry[] = [
   },
   {
     name: 'githistory',
-    urlTemplate: 'https://github.githistory.xyz/{owner}/{repo}',
+    urlTemplate: 'https://github.githistory.xyz/{owner}/{repo}/blob/{ref}/{filepath}',
     order: 9,
     iconPath: 'logo/githistory-16x16.png',
     note: 'optimal for file/folder paths',
+    enableCondition: {
+      requiresFilePath: true,
+      fileExtensions: [], // 空数组 = 支持所有文件扩展名 Empty array = all file extensions supported
+    },
   },
 ] as const;
