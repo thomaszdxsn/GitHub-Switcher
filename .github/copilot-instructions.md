@@ -19,11 +19,12 @@ Auto-generated from all feature plans. Last updated: 2025-11-15
 - **Language**: TypeScript 5.x with strict type checking enabled
 - **Build & Dev Tools**: pnpm package manager, cross-env for environment variables
 - **Code Quality**: Biome (linter), Prettier (formatter)
-- **Testing**: Vitest with v8 coverage (100% coverage on core utilities)
+- **Testing**: Vitest with v8 coverage (97.01% coverage statements, 127 tests passing)
 - **UI Architecture**: Native DOM manipulation (no React/framework) with CSS class prefix `__github-switcher` for isolation
-- **Storage**: chrome.storage.sync for user preferences (open in new tab toggle, enabled tools list)
+- **Storage**: chrome.storage.sync for user preferences (enabled tools list, tool order, open in new tab toggle)
 - **Navigation**: GitHub SPA navigation support (popstate, turbo:load event listeners)
 - **Accessibility**: ARIA attributes for keyboard navigation and screen reader support
+- **Drag & Drop**: SortableJS 1.15.6 for tool reordering in options page
 
 ## Project Structure
 
@@ -37,21 +38,36 @@ src/
     storage.ts      # User preferences management
     types.ts        # TypeScript type definitions
     urlGenerator.ts # Tool URL generation logic
+    optionsStateManager.ts  # Options page state management (enable/disable, order, reset)
+    toolStateManager.ts     # Tool state computation (context-aware enabling)
+  options/          # Options page (tool management UI)
+    components/     # Native DOM components (ToolList)
+    styles/         # CSS for options page
+  options.tsx       # Options page entry point (Plasmo format)
   ui/               # UI components (native DOM)
     SidebarButton.ts  # Fixed-position sidebar button
-    ToolDropdown.ts   # Dropdown menu with tool links
+    ToolDropdown.ts   # Dropdown menu with tool links (supports custom order)
   utils/            # Utility functions
     logger.ts       # Logging utility
     positioning.ts  # Menu positioning logic
 tests/
   unit/             # Unit tests for core utilities
-    detectGithub.test.ts  # GitHub URL parser tests (15 tests)
-    urlGenerator.test.ts  # URL generator tests (8 tests)
-    positioning.test.ts   # Positioning logic tests (8 tests)
-    logger.test.ts        # Logger tests (8 tests)
+    detectGithub.test.ts       # GitHub URL parser tests (32 tests)
+    urlGenerator.test.ts       # URL generator tests (19 tests)
+    positioning.test.ts        # Positioning logic tests (8 tests)
+    logger.test.ts             # Logger tests (8 tests)
+    config.test.ts             # Config tests (21 tests)
+    toolStateManager.test.ts   # Tool state manager tests (22 tests)
+    optionsStateManager.test.ts # Options state manager tests (17 tests)
   setup.ts          # Test configuration
 build/
-  chrome-mv3-prod/  # Production build output (40KB total, 4.4KB gzipped content script)
+  chrome-mv3-prod/  # Production build output (~50KB total, 4.4KB gzipped content script)
+specs/
+  004-tool-management/  # Tool management feature documentation
+    spec.md         # Feature specification
+    tasks.md        # 76 tasks breakdown (60 completed)
+    PHASE2_MANUAL_TEST.md  # Manual test plan for enable/disable (12 test cases)
+    PHASE3_MANUAL_TEST.md  # Manual test plan for drag & drop (10 test cases)
 ```
 
 ## Commands
@@ -143,6 +159,36 @@ async function initialize() {
 ```
 
 ## Recent Changes
+- **2025-11-16** (004-tool-management): Tool management settings page with customization features
+  - Phase 1-2: Options page foundation + Content Script sync (18 tasks)
+    - Created options.tsx page with tool list, enable/disable switches, reset button
+    - Implemented optionsStateManager: toggleToolEnabled(), resetToDefault(), validateToolConfiguration()
+    - Content Script real-time sync: storage listener updates menu when settings change
+    - Warning banner for data corruption recovery
+  - Phase 3: Drag & drop reordering (15 tasks)
+    - Integrated SortableJS for drag-and-drop tool ordering
+    - saveToolOrder() with validation (must contain all 9 unique IDs 1-9)
+    - ToolDropdown supports custom tool order via sortToolsByOrder()
+    - Visual feedback: ghost class (opacity 0.4), chosen class (blue shadow), 150ms animation
+  - Phase 4-5: Testing & optimization (24 tasks)
+    - Unit test coverage: 97.01% statements (127/127 tests passing)
+    - Manual test plans: PHASE2_MANUAL_TEST.md (12 cases), PHASE3_MANUAL_TEST.md (10 cases)
+    - ARIA accessibility: drag handles, toggle switches, reset button
+    - Data validation: auto-recovery for invalid toolOrder/enabledTools
+  - **Storage Model**:
+    - `enabledTools: number[]` - List of enabled tool IDs (default: [1-9])
+    - `toolOrder?: number[]` - Custom order (undefined = default [1-9])
+    - `openInNewTab: boolean` - Open tools in new tab (default: false)
+  - **Key Functions**:
+    - `toggleToolEnabled(toolId, enabled)`: FR-011 constraint (≥1 tool must be enabled)
+    - `saveToolOrder(toolOrder)`: Validates 9 unique IDs (1-9)
+    - `getToolOrder(preferences)`: Returns custom order or default
+    - `validateToolConfiguration(config)`: Auto-repairs corrupted data
+  - **SortableJS Integration**:
+    - Library: sortablejs@1.15.6 (8KB gzipped)
+    - Config: `handle: '.tool-drag-handle', animation: 150, ghostClass, chosenClass`
+    - onEnd callback: extracts DOM order, validates 9 tools, calls saveToolOrder()
+
 - **2025-11-15** (003-codewiki-integration): Added CodeWiki as 9th tool
   - Added CodeWiki tool configuration (https://codewiki.google/{owner}/{repo})
   - Positioned CodeWiki below DeepWiki in tool menu (order: 3)

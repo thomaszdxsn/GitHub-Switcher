@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      sortablejs:
+        specifier: ^1.15.6
+        version: 1.15.6
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.3.4
@@ -20,6 +24,9 @@ importers:
       '@types/node':
         specifier: ^24.10.0
         version: 24.10.0
+      '@types/sortablejs':
+        specifier: ^1.15.9
+        version: 1.15.9
       '@vitest/coverage-v8':
         specifier: ^4.0.8
         version: 4.0.8(vitest@4.0.8(@types/node@24.10.0)(@vitest/ui@4.0.8)(jsdom@27.1.0)(less@4.4.2)(lightningcss@1.30.2)(sass@1.94.0)(yaml@2.8.1))
@@ -2103,6 +2110,9 @@ packages:
   '@types/relateurl@0.2.33':
     resolution: {integrity: sha512-bTQCKsVbIdzLqZhLkF5fcJQreE4y1ro4DIyVrlDNSCJRRwHhB8Z+4zXXa8jN6eDvc2HbRsEYgbvrnGvi54EpSw==}
 
+  '@types/sortablejs@1.15.9':
+    resolution: {integrity: sha512-7HP+rZGE2p886PKV9c9OJzLBI6BBJu1O7lJGYnPyG3fS4/duUCcngkNCjsLwIMV+WMqANe3tt4irrXHSIe68OQ==}
+
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
@@ -3681,6 +3691,9 @@ packages:
 
   sliced@1.0.1:
     resolution: {integrity: sha512-VZBmZP8WU3sMOZm1bdgTadsQbcscK0UM8oKxKVBs4XAhUo2Xxzm/OFMGBkPusxw9xL3Uy8LrzEqGqJhclsr0yA==}
+
+  sortablejs@1.15.6:
+    resolution: {integrity: sha512-aNfiuwMEpfBM/CN6LY0ibyhxPfPbyFeBTYJKCvzkJ2GkUpazIt3H+QIPAMHwqQ7tMKaHz1Qj+rJJCqljnf4p3A==}
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -6165,6 +6178,8 @@ snapshots:
 
   '@types/relateurl@0.2.33': {}
 
+  '@types/sortablejs@1.15.9': {}
+
   '@types/trusted-types@2.0.7': {}
 
   '@vitest/coverage-v8@4.0.8(vitest@4.0.8(@types/node@24.10.0)(@vitest/ui@4.0.8)(jsdom@27.1.0)(less@4.4.2)(lightningcss@1.30.2)(sass@1.94.0)(yaml@2.8.1))':
@@ -7867,6 +7882,8 @@ snapshots:
   slash@3.0.0: {}
 
   sliced@1.0.1: {}
+
+  sortablejs@1.15.6: {}
 
   source-map-js@1.2.1: {}
 

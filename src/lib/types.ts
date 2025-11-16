@@ -52,6 +52,9 @@ export interface UserPreferences {
 
   /** List of enabled tool order numbers (default: all enabled) */
   enabledTools: number[];
+
+  /** Custom tool order (optional, defaults to TOOLS array order 1-9) */
+  toolOrder?: number[];
 }
 
 /**

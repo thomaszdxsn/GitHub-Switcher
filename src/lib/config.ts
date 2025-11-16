@@ -107,3 +107,34 @@ export const TOOLS: readonly ToolEntry[] = [
     },
   },
 ] as const;
+
+/**
+ * Tool descriptions for the options page (40-60 characters each)
+ * Displayed in the settings UI to help users identify tool purposes
+ */
+export const TOOL_DESCRIPTIONS: Record<number, string> = {
+  1: "GitHub's official online code editor for quick edits",
+  2: 'AI-powered documentation generator for code repositories',
+  3: "Google's code visualization tool with interactive navigation",
+  4: 'Online IDE with live preview for frontend projects',
+  5: 'Quick dev environment launcher with framework templates',
+  6: 'Render Jupyter notebooks with better viewing experience',
+  7: 'Visualize Git repository branch relationships and history',
+  8: 'Package entire codebase into single text file for sharing',
+  9: 'Visualize complete file modification history and evolution',
+};
+
+/**
+ * Gets the description for a tool by its order ID
+ * @param toolOrder - Tool order ID (1-9)
+ * @returns Tool description string, or fallback message if not found
+ */
+export function getToolDescription(toolOrder: number): string {
+  const description = TOOL_DESCRIPTIONS[toolOrder];
+  if (description) {
+    return description;
+  }
+
+  // Fallback for invalid tool IDs
+  return 'No description available';
+}

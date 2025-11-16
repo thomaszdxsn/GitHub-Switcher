@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/thomaszdxsn/GitHub-Switcher/schemas/tool-config.schema.json",
+  "title": "UserToolConfiguration",
+  "description": "用户工具配置数据模型 - 存储在 chrome.storage.sync/local",
+  "type": "object",
+  "required": ["toolOrder", "enabledTools", "meta"],
+  "properties": {
+    "toolOrder": {
+      "type": "array",
+      "description": "工具显示顺序（工具 ID 的排列）",
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9
+      },
+      "minItems": 9,
+      "maxItems": 9,
+      "uniqueItems": true,
+      "examples": [
+        [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        [2, 1, 3, 5, 4, 6, 7, 8, 9]
+      ]
+    },
+    "enabledTools": {
+      "type": "array",
+      "description": "启用的工具 ID 列表（至少保留 1 个）",
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9
+      },
+      "minItems": 1,
+      "maxItems": 9,
+      "uniqueItems": true,
+      "examples": [
+        [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        [1, 2, 3, 5, 7, 9]
+      ]
+    },
+    "meta": {
+      "$ref": "#/definitions/SettingsMeta"
+    }
+  },
+  "definitions": {
+    "SettingsMeta": {
+      "type": "object",
+      "description": "配置元数据",
+      "required": ["version", "updatedAt", "source"],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "description": "配置数据版本号（用于迁移）",
+          "minimum": 1,
+          "examples": [1]
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "最后更新时间 (ISO 8601 格式)",
+          "format": "date-time",
+          "examples": ["2025-11-16T10:30:00.000Z"]
+        },
+        "source": {
+          "type": "string",
+          "description": "更新来源",
+          "enum": ["default", "options", "migration"],
+          "examples": ["options"]
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "toolOrder": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      "enabledTools": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      "meta": {
+        "version": 1,
+        "updatedAt": "2025-11-16T10:30:00.000Z",
+        "source": "default"
+      }
+    },
+    {
+      "toolOrder": [2, 1, 3, 5, 4, 6, 7, 8, 9],
+      "enabledTools": [1, 2, 3, 5, 6, 7, 8, 9],
+      "meta": {
+        "version": 1,
+        "updatedAt": "2025-11-16T15:45:30.000Z",
+        "source": "options"
+      }
+    }
+  ]
+}

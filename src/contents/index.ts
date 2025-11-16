@@ -96,11 +96,15 @@ function toggleMenu(toolStates: Map<string, import('@/lib/types').ToolState>): v
 /**
  * Opens the dropdown menu
  */
-function openMenu(toolStates: Map<string, import('@/lib/types').ToolState>): void {
+async function openMenu(toolStates: Map<string, import('@/lib/types').ToolState>): Promise<void> {
   if (!sidebarButton || !toolDropdown) return;
 
   const buttonElement = sidebarButton.getButtonElement();
   if (!buttonElement) return;
+
+  // Load user preferences for toolOrder
+  const preferences = await loadPreferences();
+  const toolOrder = preferences.toolOrder; // Can be undefined (defaults to [1,2,3,4,5,6,7,8,9])
 
   // Calculate menu position - start from button's vertical center
   const buttonRect = buttonElement.getBoundingClientRect();
@@ -115,8 +119,8 @@ function openMenu(toolStates: Map<string, import('@/lib/types').ToolState>): voi
   // Arrow is 8px wide, so total offset = buttonWidth + gap + arrowWidth
   position.left = buttonRect.right + 2 + 8; // 2px gap + 8px arrow
 
-  // Show dropdown
-  toolDropdown.show(toolStates, position);
+  // Show dropdown with toolOrder
+  toolDropdown.show(toolStates, position, toolOrder);
 
   // Update state
   menuState.isOpen = true;
@@ -190,6 +194,53 @@ async function handleNavigation(): Promise<void> {
 }
 
 /**
+ * Handles user preference changes from options page
+ */
+async function handleStorageChange(
+  changes: { [key: string]: chrome.storage.StorageChange },
+  areaName: string
+): Promise<void> {
+  // Only handle sync storage changes
+  if (areaName !== 'sync') {
+    return;
+  }
+
+  // Check if enabledTools or toolOrder changed
+  const enabledToolsChanged = changes.enabledTools !== undefined;
+  const toolOrderChanged = changes.toolOrder !== undefined;
+
+  if (!enabledToolsChanged && !toolOrderChanged) {
+    return;
+  }
+
+  log('User preferences changed, updating dropdown menu');
+
+  // If menu is currently open, update it
+  if (toolDropdown && menuState.isOpen) {
+    // Try file URL first, fallback to repo URL
+    const fileContext = parseGitHubFileUrl();
+    const repoContext = fileContext || parseGitHubUrl();
+
+    if (repoContext) {
+      try {
+        // Reload user preferences
+        const preferences = await loadPreferences();
+
+        // Recompute tool states with new preferences
+        const enabledTools = TOOLS.filter((tool) => preferences.enabledTools.includes(tool.order));
+        const toolStates = computeAllToolStates(enabledTools, repoContext);
+
+        // Update dropdown with new tool states and order
+        toolDropdown.updateTools(toolStates, preferences.toolOrder);
+        log('Dropdown menu updated with new tool states');
+      } catch (error) {
+        warn('Failed to update dropdown menu:', error);
+      }
+    }
+  }
+}
+
+/**
  * Cleans up the extension (removes button and dropdown)
  */
 function cleanup(): void {
@@ -221,6 +272,9 @@ function cleanup(): void {
     // Add navigation listeners for GitHub SPA
     window.addEventListener('popstate', handleNavigation);
     document.addEventListener('turbo:load', handleNavigation);
+
+    // Add storage change listener for options page updates
+    chrome.storage.onChanged.addListener(handleStorageChange);
 
     // Add beforeunload listener for cleanup
     window.addEventListener('beforeunload', cleanup);
