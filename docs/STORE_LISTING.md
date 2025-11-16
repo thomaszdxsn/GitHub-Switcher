@@ -8,7 +8,7 @@ GitHub Switcher - Developer Tools Launcher
 
 ## Short Description (max 132 chars)
 ```
-Quick access to 8 developer tools for GitHub repos. Open any repo in GitHub.dev, CodeSandbox, StackBlitz, nbviewer, and more.
+Quick access to 9 developer tools for GitHub repos. Open any repo in GitHub.dev, CodeSandbox, StackBlitz, nbviewer, and more.
 ```
 *Character count: 131*
 
@@ -17,20 +17,21 @@ Quick access to 8 developer tools for GitHub repos. Open any repo in GitHub.dev,
 ```markdown
 # GitHub Switcher
 
-Enhance your GitHub workflow with instant access to third-party developer tools. A lightweight sidebar button appears on every GitHub repository page, giving you one-click access to 8 powerful development tools.
+Enhance your GitHub workflow with instant access to third-party developer tools. A lightweight sidebar button appears on every GitHub repository page, giving you one-click access to 9 powerful development tools.
 
 ## ✨ Features
 
-**8 Integrated Developer Tools:**
+**9 Integrated Developer Tools:**
 
 1. **GitHub.dev** - Edit code directly in VS Code for the Web, no setup required
 2. **DeepWiki** - AI-powered documentation explorer and code analyzer
-3. **CodeSandbox** - Full-featured online code editor with live preview
-4. **StackBlitz** - Instant full-stack development environment in your browser
-5. **nbviewer** - Enhanced Jupyter notebook viewer with better rendering
-6. **gitdiagram** - Visualize repository structure and dependencies as diagrams
-7. **gitingest** - Analyze repository metrics, complexity, and insights
-8. **githistory** - Interactive file history and code evolution visualization
+3. **CodeWiki** - AI-enhanced code and documentation browser for GitHub repos
+4. **CodeSandbox** - Full-featured online code editor with live preview
+5. **StackBlitz** - Instant full-stack development environment in your browser
+6. **nbviewer** - Enhanced Jupyter notebook viewer with better rendering
+7. **gitdiagram** - Visualize repository structure and dependencies as diagrams
+8. **gitingest** - Analyze repository metrics, complexity, and insights
+9. **githistory** - Interactive file history and code evolution visualization
 
 **Why Use GitHub Switcher?**
 
@@ -121,7 +122,7 @@ Upcoming features in development:
 ## ⭐ Version History
 
 **v1.0.0** (Current Release)
-- Initial release with 8 integrated tools
+- Initial release with 9 integrated tools
 - Sidebar button with fixed positioning
 - Smart menu positioning (adapts to viewport)
 - Full keyboard and screen reader accessibility
@@ -200,7 +201,7 @@ https://thomaszdxsn.github.io/GitHub-Switcher/PRIVACY_POLICY.html
 - **Content**: 
   - Extension icon (centered or left-aligned)
   - Text: "GitHub Switcher" (bold, large font)
-  - Subtitle: "8 Developer Tools, One Click"
+  - Subtitle: "9 Developer Tools, One Click"
   - Simple background gradient or solid color
   - Include tool icons (GitHub.dev, CodeSandbox, StackBlitz, etc.)
 

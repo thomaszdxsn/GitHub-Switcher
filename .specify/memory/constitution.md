@@ -1,18 +1,18 @@
 <!--
 Sync Impact Report:
-Version change: INITIAL → 1.0.0
-Modified principles: N/A (initial creation)
+Version change: 1.0.0 → 2.0.0
+Modified principles: Added V. Documentation Language Standard (Chinese)
 Added sections:
-  - I. Open Source Security (no private information exposure)
-  - II. Test Coverage Mandate
-  - III. Documentation Coverage
-  - IV. Transparency & Public Accountability
+  - V. Documentation Language Standard (Chinese documentation mandate)
 Removed sections: N/A
 Templates requiring updates:
-  ✅ plan-template.md - Constitution Check section compatible
-  ✅ spec-template.md - Requirements align with security and testing principles
-  ✅ tasks-template.md - Task phases support test-first approach
-Follow-up TODOs: None
+  ⚠️ spec-template.md - Need to convert to Chinese structure
+  ⚠️ plan-template.md - Need to convert to Chinese structure
+  ⚠️ tasks-template.md - Need to convert to Chinese structure
+  ⚠️ agent-file-template.md - Need to update with Chinese guideline
+Follow-up TODOs:
+  - Update all template files in .specify/templates/ to Chinese
+  - Update .github/copilot-instructions.md with Chinese requirement
 -->
 
 # GitHub-Switcher Constitution
@@ -76,6 +76,26 @@ Follow-up TODOs: None
 
 **Rationale**: Transparency builds trust, enables community participation, and ensures accountability. Open source thrives on open communication.
 
+### V. Documentation Language Standard
+
+**Rule**: All project documentation (specifications, implementation plans, task lists, code comments) MUST be written in **Simplified Chinese** to improve team communication efficiency and documentation readability.
+
+**Implementation Requirements**:
+- Feature specifications (spec.md) MUST be written in Chinese for all sections
+- Implementation plans (plan.md) MUST use Chinese to describe tasks, architecture, and timelines
+- Task lists (tasks.md) MUST use Chinese for task descriptions and acceptance criteria
+- Code comments MUST use Chinese to explain business logic (function/class names can remain in English)
+- Git commit messages MUST use Chinese to describe changes
+- User-facing documentation (README.md, CHANGELOG.md) MUST provide Chinese versions
+- Technical terms MAY retain English originals with Chinese annotations (e.g., "content script (内容脚本)")
+
+**Exceptions**:
+- Code identifiers (variable names, function names, class names) remain in English
+- Dependency library and framework names remain in original language
+- Issues/PRs for international community communication may use English
+
+**Rationale**: Chinese as the team's primary working language enables reduced comprehension costs, improved collaboration efficiency, and minimized ambiguity risks.
+
 ## Quality Gates
 
 **Pre-Commit Gates**:
@@ -134,4 +154,4 @@ Follow-up TODOs: None
 
 **Guidance Reference**: For runtime development guidance, see `.specify/templates/agent-file-template.md` (auto-updated from feature plans).
 
-**Version**: 1.0.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-11
+**Version**: 2.0.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-15

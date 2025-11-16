@@ -1,4 +1,6 @@
-import type { GeneratedToolLink, MenuPosition } from '../lib/types';
+import { TOOLS } from '../lib/config';
+import { TOOL_ICONS } from '../lib/icons';
+import type { MenuPosition, ToolState } from '../lib/types';
 
 /**
  * ToolDropdown component - renders the dropdown menu with tool links
@@ -12,8 +14,9 @@ export class ToolDropdown {
 
   /**
    * Creates the dropdown menu element
+   * @param toolStates - Map of tool name to ToolState (enabled/disabled with URL)
    */
-  private createMenu(toolLinks: GeneratedToolLink[]): HTMLUListElement {
+  private createMenu(toolStates: Map<string, ToolState>): HTMLUListElement {
     const menu = document.createElement('ul');
     menu.className = '__github-switcher-dropdown-menu';
     menu.id = '__github-switcher-menu';
@@ -22,33 +25,64 @@ export class ToolDropdown {
     menu.setAttribute('role', 'menu');
     menu.setAttribute('aria-label', 'Third-party tools');
 
-    toolLinks
-      .filter((link) => link.enabled)
-      .forEach((link) => {
-        const li = document.createElement('li');
-        li.className = '__github-switcher-menu-item';
-        li.setAttribute('role', 'none');
+    // Render all tools (enabled and disabled)
+    Array.from(toolStates.entries()).forEach(([toolName, toolState]) => {
+      // Get tool config from TOOLS array
+      const toolConfig = TOOLS.find((t) => t.name === toolName);
+      if (!toolConfig) return; // Skip if tool not found
 
-        const anchor = document.createElement('a');
-        anchor.href = link.url;
+      const li = document.createElement('li');
+      li.className = '__github-switcher-menu-item';
+      li.setAttribute('role', 'none');
+
+      const anchor = document.createElement('a');
+      anchor.className = '__github-switcher-menu-link';
+      anchor.setAttribute('role', 'menuitem');
+
+      // T035: Apply disabled state styling and attributes
+      if (toolState.enabled && toolState.url) {
+        anchor.href = toolState.url;
         anchor.target = '_blank';
         anchor.rel = 'noopener noreferrer';
-        anchor.className = '__github-switcher-menu-link';
-        anchor.textContent = link.tool.name;
-        anchor.setAttribute('role', 'menuitem');
         anchor.setAttribute('tabindex', '0');
+      } else {
+        // Disabled state
+        anchor.classList.add('__github-switcher-menu-link--disabled');
+        anchor.setAttribute('aria-disabled', 'true');
+        anchor.setAttribute('tabindex', '-1');
+        // T036: Intercept clicks on disabled tools
+        anchor.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      }
 
-        // Add note if present
-        if (link.tool.note) {
-          const note = document.createElement('span');
-          note.className = '__github-switcher-menu-note';
-          note.textContent = ` (${link.tool.note})`;
-          anchor.appendChild(note);
-        }
+      // Add icon
+      const icon = document.createElement('img');
+      icon.className = '__github-switcher-menu-icon';
+      icon.src = TOOL_ICONS[toolName] || '';
+      icon.alt = `${toolName} icon`;
+      icon.width = 16;
+      icon.height = 16;
+      anchor.appendChild(icon);
 
-        li.appendChild(anchor);
-        menu.appendChild(li);
-      });
+      // Add text container
+      const textContainer = document.createElement('span');
+      textContainer.className = '__github-switcher-menu-text';
+      textContainer.textContent = toolName;
+
+      // Add note if present
+      if (toolConfig.note) {
+        const note = document.createElement('span');
+        note.className = '__github-switcher-menu-note';
+        note.textContent = ` (${toolConfig.note})`;
+        textContainer.appendChild(note);
+      }
+
+      anchor.appendChild(textContainer);
+      li.appendChild(anchor);
+      menu.appendChild(li);
+    });
 
     return menu;
   }
@@ -110,12 +144,25 @@ export class ToolDropdown {
       }
 
       .__github-switcher-menu-link {
-        display: block;
+        display: flex;
+        align-items: center;
         padding: 10px 16px;
         color: #24292f;
         text-decoration: none;
         font-size: 14px;
-        transition: background-color 0.1s ease;
+        transition: background-color 0.1s ease, opacity 0.1s ease;
+      }
+
+      .__github-switcher-menu-icon {
+        width: 16px;
+        height: 16px;
+        margin-right: 10px;
+        flex-shrink: 0;
+        display: block;
+      }
+
+      .__github-switcher-menu-text {
+        display: inline;
       }
 
       .__github-switcher-menu-link:hover {
@@ -124,6 +171,20 @@ export class ToolDropdown {
 
       .__github-switcher-menu-link:active {
         background-color: #eaeef2;
+      }
+
+      /* Disabled state styles */
+      .__github-switcher-menu-link--disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .__github-switcher-menu-link--disabled:hover {
+        background-color: transparent;
+      }
+
+      .__github-switcher-menu-link--disabled:active {
+        background-color: transparent;
       }
 
       .__github-switcher-menu-note {
@@ -162,6 +223,14 @@ export class ToolDropdown {
         .__github-switcher-menu-note {
           color: #768390;
         }
+
+        .__github-switcher-menu-link--disabled:hover {
+          background-color: transparent;
+        }
+
+        .__github-switcher-menu-link--disabled:active {
+          background-color: transparent;
+        }
       }
     `;
     document.head.appendChild(style);
@@ -176,8 +245,10 @@ export class ToolDropdown {
 
   /**
    * Shows the dropdown menu at the specified position
+   * @param toolStates - Map of tool name to ToolState (enabled/disabled with URL)
+   * @param position - Menu position {top, left}
    */
-  public show(toolLinks: GeneratedToolLink[], position: MenuPosition): void {
+  public show(toolStates: Map<string, ToolState>, position: MenuPosition): void {
     if (this.menuContainer) {
       // Already showing, just update position
       if (this.menu) {
@@ -189,7 +260,7 @@ export class ToolDropdown {
 
     this.injectStyles();
 
-    this.menu = this.createMenu(toolLinks);
+    this.menu = this.createMenu(toolStates);
 
     // Apply position directly to menu element
     this.menu.style.top = `${position.top}px`;

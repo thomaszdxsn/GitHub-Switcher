@@ -918,7 +918,7 @@ pnpm test --coverage
 
 - [ ] Button appears on repository pages only (FR-001, FR-002)
 - [ ] Button positioned on left side without obstructing content (FR-020)
-- [ ] Dropdown shows all 8 tools in correct order (FR-005)
+- [ ] Dropdown shows all 9 tools in correct order (FR-005)
 - [ ] Tool URLs are correctly generated (FR-007, SC-003)
 - [ ] Links open in new tab (FR-008)
 - [ ] Dropdown closes when clicking outside (FR-011)
