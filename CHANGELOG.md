@@ -5,9 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.0] - 2025-11-17
 
-### Added (v0.4.0 - Tool Management & Customization)
+### Added
 - **Tool Management Settings Page**: New options page for customizing tool visibility and order
   - **Enable/Disable Individual Tools**: Toggle any of the 9 tools on/off via checkbox switches
     - At least 1 tool must remain enabled (safety constraint - FR-011)
@@ -72,61 +72,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Positioned below DeepWiki in the tool menu (3rd position)
   - Includes dedicated unit tests for URL generation and special character handling
 
-### Changed (v0.4.0)
-- **UI Components**:
-  - ToolDropdown now accepts `toolOrder` parameter in `show()` and `updateTools()` methods
-  - New `sortToolsByOrder()` helper function sorts tools based on user preferences
-  - Menu items render in custom order specified by user
-- **Data Model**:
-  - `UserPreferences` extended with `toolOrder?: number[]` field (stores custom order)
-  - Default `toolOrder` is `undefined` (falls back to [1,2,3,4,5,6,7,8,9])
-- **Storage Functions** (optionsStateManager):
-  - `saveToolOrder(toolOrder)`: Validates and saves custom order (must contain all 9 unique IDs 1-9)
-  - `toggleToolEnabled(toolId, enabled)`: Prevents disabling last tool (throws error if attempted)
-  - `resetToDefault()`: Resets `enabledTools` to [1-9], `toolOrder` to undefined
-  - `validateToolConfiguration(config)`: Auto-repairs invalid `toolOrder` or `enabledTools`
-  - `getToolOrder(preferences)`: Returns custom order or default [1-9]
-- **Content Script Updates**:
-  - `openMenu()` now passes `preferences.toolOrder` to `toolDropdown.show()`
-  - `handleStorageChange()` detects `toolOrder` changes and updates menu in real-time
-- **Test Coverage Improvements**:
-  - Unit tests: 127 tests passing (up from 89)
-  - Coverage: 97.01% statements, 92.7% branches, 100% functions
-  - New tests for `saveToolOrder()`, `toggleToolEnabled()`, `resetToDefault()`, `validateToolConfiguration()`
-
-### Changed (Smart Tool Enabling)
-- Tool configurations updated with `enableCondition` field:
-  - **githistory**: `requiresFilePath: true, fileExtensions: []` (all files)
-  - **nbviewer**: `requiresFilePath: true, fileExtensions: ['ipynb']` (notebook files only)
-- URL templates updated for file-aware tools:
-  - **githistory**: Now includes `/blob/{ref}/{filepath}` for file-specific history
-  - **nbviewer**: Now includes `/blob/{ref}/{filepath}` for direct notebook rendering
-- UI updated to render enabled/disabled states with opacity and ARIA attributes
-- Content script now uses file context detection for intelligent tool state computation
-- Tool count increased from 8 to 9
-- Updated tool order: CodeSandbox through githistory now numbered 4-9 (previously 3-8)
-- Default enabled tools list now includes all 9 tools `[1, 2, 3, 4, 5, 6, 7, 8, 9]`
+### Changed
+- ToolDropdown 组件支持自定义工具顺序（`toolOrder` 参数）
+- 数据模型扩展 `toolOrder?: number[]` 字段存储自定义顺序
+- 工具配置新增 `enableCondition` 字段（文件类型过滤）
+- URL 模板更新支持文件特定占位符（`{ref}`, `{filepath}`）
+- 工具数量从 8 个增加到 9 个
+- 默认启用工具列表更新为 `[1, 2, 3, 4, 5, 6, 7, 8, 9]`
 
 ### Fixed
-- **Tool State Manager**: Now correctly handles `RepositoryContext` in addition to `FileContext`
-  - Fixed issue where tools without `enableCondition` were disabled on repository homepage
-  - Tools like GitHub.dev, DeepWiki, CodeWiki now work correctly on repository pages
-  - Added 5 new test cases to prevent regression (89 total tests → 127 total)
-- **Context Detection**: Content script now passes `RepositoryContext` on repo pages instead of `null`
-  - Enables proper URL generation for repository-level tools
-  - File-aware tools (githistory, nbviewer) correctly disabled on non-file pages
+- 修复工具状态管理器在仓库主页上的处理逻辑
+  - GitHub.dev、DeepWiki、CodeWiki 现在在仓库页面正常工作
+  - 文件工具（githistory、nbviewer）在非文件页面正确禁用
+- 修复上下文检测逻辑，仓库页面传递 `RepositoryContext` 而非 `null`
 
-### Security & Performance (v0.4.0)
-- **No New Permissions Required**: Uses existing `storage` permission for sync
-- **No Network Requests**: All logic runs locally in browser
-- **Minimal Bundle Size Impact**:
+### Testing & Performance
+- **测试覆盖率**：97.01% 语句覆盖率，127/127 测试通过
+- **手动测试**：22 个测试用例（启用/禁用 12 个，拖拽排序 10 个）
+- **构建体积**：
   - SortableJS: +8KB gzipped
-  - Options page: ~15KB uncompressed (first-time load only)
-  - Content script: Still 4.4KB gzipped (no change)
-- **Fast Settings Persistence**: chrome.storage.sync write delay <500ms (P95)
-- **E2E Testing**: Automated tests replaced with comprehensive manual testing checklists
-  - Chrome Extension E2E setup complexity avoided
-  - Manual tests ensure functionality across platforms (Windows, macOS, Linux)
+  - 设置页面: ~15KB 未压缩（首次加载）
+  - Content Script: 4.4KB gzipped（无变化）
+- **性能指标**：
+  - 设置持久化延迟 <500ms (P95)
+  - 无新增权限需求
+  - 无网络请求（纯本地运行）
 
 ## [1.0.0] - 2025-11-13
 
