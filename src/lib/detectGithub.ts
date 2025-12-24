@@ -1,6 +1,67 @@
 import type { FileContext, GitHubDetectionResult, RepositoryContext } from './types';
 
 /**
+ * Reserved GitHub namespaces that are not repository owners
+ * These paths look like /{owner}/{repo} but are actually GitHub product pages
+ * 这些路径看起来像 /{owner}/{repo} 但实际上是 GitHub 产品页面
+ */
+const RESERVED_NAMESPACES = new Set([
+  // GitHub features and products
+  'features',
+  'copilot',
+  'codespaces',
+  'actions',
+  'packages',
+  'security',
+  'enterprise',
+  'pricing',
+  'premium-support',
+  'customer-stories',
+  'readme',
+  'about',
+  'team',
+
+  // User/org management
+  'settings',
+  'organizations',
+  'orgs',
+  'users',
+  'apps',
+  'sponsors',
+
+  // Content discovery
+  'explore',
+  'topics',
+  'trending',
+  'collections',
+  'search',
+  'marketplace',
+
+  // Authentication
+  'login',
+  'logout',
+  'join',
+  'signup',
+  'sessions',
+  'password_reset',
+
+  // Other GitHub pages
+  'notifications',
+  'watching',
+  'stars',
+  'dashboard',
+  'issues',
+  'pulls',
+  'discussions',
+  'projects',
+  'gist',
+  'new',
+  'account',
+  'contact',
+  'support',
+]);
+
+/**
  * Detects if the current page is a GitHub page
  * Checks if the hostname matches github.com or its subdomains
  *
@@ -57,6 +118,12 @@ export function parseGitHubUrl(url: string = window.location.href): RepositoryCo
 
   // Validate owner and repo (basic checks)
   if (!owner || !repo || owner.length > 39 || repo.length > 100) {
+    return null;
+  }
+
+  // Check if owner is a reserved GitHub namespace (not a real user/org)
+  // 检查 owner 是否是保留的 GitHub 命名空间（非真实用户/组织）
+  if (RESERVED_NAMESPACES.has(owner.toLowerCase())) {
     return null;
   }
 
