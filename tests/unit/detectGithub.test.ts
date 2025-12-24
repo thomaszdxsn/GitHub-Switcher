@@ -160,6 +160,50 @@ describe('detectGithub', () => {
       expect(parseGitHubUrl('https://github.com')).toBeNull();
     });
 
+    it('returns null for reserved GitHub namespaces', () => {
+      // GitHub Copilot pages
+      expect(
+        parseGitHubUrl('https://github.com/copilot/c/e0e0801e-3fb8-4f30-af19-eff221ede32d')
+      ).toBeNull();
+      expect(parseGitHubUrl('https://github.com/copilot/settings')).toBeNull();
+
+      // Settings pages
+      expect(parseGitHubUrl('https://github.com/settings/profile')).toBeNull();
+      expect(parseGitHubUrl('https://github.com/settings/security')).toBeNull();
+
+      // Feature pages
+      expect(parseGitHubUrl('https://github.com/features/copilot')).toBeNull();
+      expect(parseGitHubUrl('https://github.com/features/actions')).toBeNull();
+
+      // Organization pages
+      expect(parseGitHubUrl('https://github.com/orgs/github/teams')).toBeNull();
+      expect(parseGitHubUrl('https://github.com/organizations/github')).toBeNull();
+
+      // Marketplace pages
+      expect(parseGitHubUrl('https://github.com/marketplace/actions/checkout')).toBeNull();
+
+      // Topics pages
+      expect(parseGitHubUrl('https://github.com/topics/javascript')).toBeNull();
+
+      // Sponsors pages
+      expect(parseGitHubUrl('https://github.com/sponsors/octocat')).toBeNull();
+
+      // Apps pages
+      expect(parseGitHubUrl('https://github.com/apps/github-actions')).toBeNull();
+
+      // Search pages
+      expect(parseGitHubUrl('https://github.com/search/advanced')).toBeNull();
+
+      // Codespaces pages
+      expect(parseGitHubUrl('https://github.com/codespaces/new')).toBeNull();
+    });
+
+    it('handles reserved namespaces case-insensitively', () => {
+      expect(parseGitHubUrl('https://github.com/COPILOT/c/abc123')).toBeNull();
+      expect(parseGitHubUrl('https://github.com/Settings/profile')).toBeNull();
+      expect(parseGitHubUrl('https://github.com/FEATURES/actions')).toBeNull();
+    });
+
     it('handles www subdomain', () => {
       const result = parseGitHubUrl('https://www.github.com/microsoft/vscode');
 
